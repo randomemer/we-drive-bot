@@ -6,4 +6,9 @@ COPY . .
 
 RUN yarn install
 
+RUN echo ${DB_NAME}
+
+RUN yarn knex migrate:latest
+
+
 CMD [ "yarn", "dev" ]

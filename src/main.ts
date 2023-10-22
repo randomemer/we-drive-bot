@@ -16,9 +16,10 @@ async function main() {
 
     // 3. Register events
     await client.registerEventListeners();
+    console.log("Registered event listeners");
 
     // 4. Register slash commands
-    // await client.registerSlashCommands()
+    await client.registerSlashCommands();
   } catch (error) {
     console.log("Failed to startup bot");
     console.error(error);

@@ -11,12 +11,20 @@ services:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_NAME}
 
+  db-migrations:
+    image: db
+    depends_on:
+      - db
+
   bot:
     build:
       context: .
       dockerfile: ./docker/Dockerfile.dev
+    env_file:
+      - .env
     depends_on:
       - db
+      - db-migrations
     networks:
       - drive
     volumes:
