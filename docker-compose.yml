@@ -1,9 +1,12 @@
 version: '3'
+
 services:
   db:
     image: mysql:latest
     env_file:
       - .env
+    networks:
+      - drive
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_NAME}
@@ -14,5 +17,10 @@ services:
       dockerfile: ./docker/Dockerfile.dev
     depends_on:
       - db
+    networks:
+      - drive
     volumes:
       - ./:/app
+
+networks:
+  drive:

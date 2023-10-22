@@ -1,11 +1,67 @@
-import { Client, ClientOptions } from "discord.js";
+import {
+  Client,
+  ClientEvents,
+  ClientOptions,
+  REST,
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
+  Routes,
+} from "discord.js";
+import fs from "node:fs";
+import path from "node:path";
 
 export default class WeDriveClient extends Client {
+  slashCommands = new Map<string, BotCommand>();
+
   constructor(options: ClientOptions) {
     super(options);
   }
 
-  async registerSlashCommands() {}
+  async registerSlashCommands() {
+    const folderContents = fs.readdirSync(path.join(__dirname, "commands"));
+    const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 
-  async registerEventListeners() {}
+    for (const item of folderContents) {
+      const commandPath = path.join(__dirname, "commands", item);
+      const command: BotCommand = require(commandPath).default;
+
+      commands.push(command.data.toJSON());
+
+      this.slashCommands.set(command.data.name, command);
+    }
+
+    const rest = new REST({ version: "10" }).setToken(
+      process.env.BOT_TOKEN as string
+    );
+
+    try {
+      console.log(`Deploying ${commands.length} application (/) commands`);
+
+      await rest.put(
+        Routes.applicationGuildCommands(
+          process.env.BOT_APP_ID!,
+          "1165331231337103370"
+        ),
+        { body: commands }
+      );
+
+      console.log(
+        `Sucessfully deployed ${commands.length} application (/) commands\n`
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async registerEventListeners() {
+    let files = fs.readdirSync(path.join(__dirname, "events"));
+    files = files.filter((file) => file.endsWith(".ts"));
+
+    for (const file of files) {
+      const filePath = path.join(__dirname, "events", file);
+      const listener: ListenerConfig<keyof ClientEvents> =
+        require(filePath).default;
+
+      this.on(listener.name, listener.listener);
+    }
+  }
 }

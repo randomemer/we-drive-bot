@@ -1,18 +1,28 @@
-import { Client } from "discord.js";
 import dotenv from "dotenv";
+import WeDriveClient from "./bot";
+import "@/modules/db";
 
 dotenv.config();
 
-const client = new Client({
-  intents: ["GuildMessages", "MessageContent", "Guilds"],
-});
+async function main() {
+  try {
+    const client = new WeDriveClient({
+      intents: ["GuildMessages", "MessageContent", "Guilds"],
+    });
 
-client.on("ready", () => {
-  console.log("Bot is connected");
-});
+    // 1. Login with discord
+    await client.login(process.env.BOT_TOKEN);
+    console.log("Bot logged in");
 
-client.on("messageCreate", (msg) => {
-  if (msg.content.includes("ping")) msg.reply("Pong");
-});
+    // 3. Register events
+    await client.registerEventListeners();
 
-client.login(process.env.BOT_TOKEN);
+    // 4. Register slash commands
+    // await client.registerSlashCommands()
+  } catch (error) {
+    console.log("Failed to startup bot");
+    console.error(error);
+  }
+}
+
+main();

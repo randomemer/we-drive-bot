@@ -2,12 +2,14 @@
   "name": "we-drive-bot",
   "packageManager": "yarn@3.6.4",
   "scripts": {
-    "dev": "npx ts-node src/main.ts"
+    "dev": "node -r tsconfig-paths/register -r ts-node/register src/main.ts"
   },
   "dependencies": {
     "axios": "^1.5.1",
     "discord.js": "^14.13.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "knex": "^3.0.1",
+    "mysql2": "^3.6.2"
   },
   "devDependencies": {
     "@types/node": "^20.8.7",
