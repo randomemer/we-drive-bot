@@ -10,3 +10,5 @@ const config: ListenerConfig<"guildCreate"> = {
     }
   },
 };
+
+export default config;
