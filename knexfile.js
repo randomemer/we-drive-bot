@@ -7,10 +7,10 @@ module.exports = {
   development: {
     client: "mysql2",
     connection: {
+      user: "root",
       host: process.env.DB_HOST,
-      port: 3306,
-      database: process.env.DB_NAME,
-      password: process.env.DB_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
+      password: process.env.MYSQL_ROOT_PASSWORD,
     },
     migrations: {
       directory: "./knex/migrations",
@@ -23,10 +23,10 @@ module.exports = {
   production: {
     client: "mysql2",
     connection: {
+      user: "root",
       host: process.env.DB_HOST,
-      port: 3306,
-      database: process.env.DB_NAME,
-      password: process.env.DB_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
+      password: process.env.MYSQL_ROOT_PASSWORD,
     },
     pool: {
       min: 2,

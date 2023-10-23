@@ -3,11 +3,10 @@ import createKnex from "knex";
 const knex = createKnex({
   client: "mysql2",
   connection: {
-    host: "db",
-    port: 3306,
+    host: process.env.DB_HOST,
     user: "root",
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    password: process.env.MYSQL_ROOT_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
     pool: {
       min: 1,
       max: 1,
