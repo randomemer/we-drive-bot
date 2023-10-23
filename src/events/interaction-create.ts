@@ -5,7 +5,7 @@ const config: ListenerConfig<"interactionCreate"> = {
   listener: async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
     const client = interaction.client as WeDriveClient;
 
     const botCommand = client.slashCommands.get(interaction.commandName);
