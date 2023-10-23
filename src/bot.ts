@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
+import logger from "./modules/utils/logger";
 
 export default class WeDriveClient extends Client {
   slashCommands = new Map<string, BotCommand>();
@@ -34,7 +35,7 @@ export default class WeDriveClient extends Client {
     );
 
     try {
-      console.log(`Deploying ${commands.length} application (/) commands`);
+      logger.info(`Deploying ${commands.length} application (/) commands`);
 
       await rest.put(
         Routes.applicationGuildCommands(
@@ -44,11 +45,11 @@ export default class WeDriveClient extends Client {
         { body: commands }
       );
 
-      console.log(
+      logger.info(
         `Sucessfully deployed ${commands.length} application (/) commands\n`
       );
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   }
 

@@ -1,4 +1,5 @@
 import pterodactyl from "@/modules/api";
+import logger from "@/modules/utils/logger";
 import { SlashCommandSubcommandBuilder } from "discord.js";
 
 const command: BotSubcommand = {
@@ -10,7 +11,7 @@ const command: BotSubcommand = {
       const resp = await pterodactyl.get("/");
       await interaction.editReply({ content: JSON.stringify(resp.data) });
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   },
 };

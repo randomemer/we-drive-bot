@@ -1,4 +1,5 @@
 import knex from "@/modules/db";
+import logger from "@/modules/utils/logger";
 
 const config: ListenerConfig<"guildCreate"> = {
   name: "guildCreate",
@@ -6,7 +7,7 @@ const config: ListenerConfig<"guildCreate"> = {
     try {
       // knex.select("*").from("servers");
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   },
 };
