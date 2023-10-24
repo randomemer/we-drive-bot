@@ -9,7 +9,7 @@ stop:
 	docker compose -f $(yml) down
 
 clean: stop
-	docker compose -f $(yml) down -v
+	docker compose -f $(yml) down --rmi all -v
 
 bot-sh:
 	docker compose -f $(yml) exec bot /bin/bash

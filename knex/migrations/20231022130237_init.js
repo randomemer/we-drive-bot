@@ -16,10 +16,10 @@ exports.up = async function (knex) {
   if (!(await knex.schema.hasTable("users"))) {
     await knex.schema.createTable("users", (table) => {
       table.string("id").primary();
-      table.string("mc-uuid");
-      table.string("mc-name");
-      table.string("created_at").defaultTo(knex.raw("CURRENT_TIMESTAMP()"));
-      table.string("updated_at").defaultTo(knex.raw("CURRENT_TIMESTAMP()"));
+      table.string("mc_uuid").nullable();
+      table.string("mc_name").nullable();
+      table.datetime("created_at").defaultTo(knex.raw("CURRENT_TIMESTAMP()"));
+      table.datetime("updated_at").defaultTo(knex.raw("CURRENT_TIMESTAMP()"));
     });
   }
 };
@@ -30,4 +30,5 @@ exports.up = async function (knex) {
  */
 exports.down = async function (knex) {
   await knex.schema.dropTable("servers");
+  await knex.schema.dropTable("users");
 };
