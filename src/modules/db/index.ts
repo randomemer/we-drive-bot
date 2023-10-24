@@ -1,4 +1,7 @@
 import createKnex from "knex";
+import { Model } from "objection";
+import ServerModel from "./models/server";
+import UserModel from "./models/user";
 
 const knex = createKnex({
   client: "mysql2",
@@ -14,4 +17,9 @@ const knex = createKnex({
   },
 });
 
-export default knex;
+Model.knex(knex);
+
+export default {
+  ServerModel,
+  UserModel,
+};

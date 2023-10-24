@@ -12,6 +12,16 @@ exports.up = async function (knex) {
       table.datetime("updated_at").defaultTo(knex.raw("CURRENT_TIMESTAMP()"));
     });
   }
+
+  if (!(await knex.schema.hasTable("users"))) {
+    await knex.schema.createTable("users", (table) => {
+      table.string("id").primary();
+      table.string("mc-uuid");
+      table.string("mc-name");
+      table.string("created_at").defaultTo(knex.raw("CURRENT_TIMESTAMP()"));
+      table.string("updated_at").defaultTo(knex.raw("CURRENT_TIMESTAMP()"));
+    });
+  }
 };
 
 /**

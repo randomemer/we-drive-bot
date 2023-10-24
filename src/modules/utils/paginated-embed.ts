@@ -23,25 +23,25 @@ export default class PaginatedEmbedMessage<T> {
       components: [
         {
           custom_id: "first",
-          label: "⏮",
+          emoji: { name: "⏮" },
           type: ComponentType.Button,
           style: ButtonStyle.Primary,
         },
         {
           custom_id: "prev",
-          label: "◀",
+          emoji: { name: "◀" },
           type: ComponentType.Button,
           style: ButtonStyle.Primary,
         },
         {
           custom_id: "next",
-          label: "▶",
+          emoji: { name: "▶" },
           type: ComponentType.Button,
           style: ButtonStyle.Primary,
         },
         {
           custom_id: "last",
-          label: "⏭",
+          emoji: { name: "⏭" },
           type: ComponentType.Button,
           style: ButtonStyle.Primary,
         },
