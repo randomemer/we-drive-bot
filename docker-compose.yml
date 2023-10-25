@@ -21,17 +21,11 @@ services:
     networks:
       - drive
     volumes:
-      - project:/app
+      - ./:/app
 
 networks:
   drive:
 
 
 volumes:
-  project:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./
   mysql-vol:

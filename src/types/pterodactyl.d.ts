@@ -139,6 +139,15 @@ declare global {
       updated_at: string;
     };
   }
+
+  interface SocketDetails {
+    token: string;
+    socket: string;
+  }
+
+  interface SocketDetailsResp {
+    data: SocketDetails;
+  }
 }
 
 export {};

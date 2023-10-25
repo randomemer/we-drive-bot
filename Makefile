@@ -6,6 +6,9 @@ start:
 	docker compose -f $(yml) up
 
 stop:
+	docker compose -f $(yml) stop
+
+down:
 	docker compose -f $(yml) down
 
 clean: stop

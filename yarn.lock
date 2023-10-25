@@ -215,7 +215,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:^8.5.5":
+"@types/ws@npm:^8.5.5, @types/ws@npm:^8.5.8":
   version: 8.5.8
   resolution: "@types/ws@npm:8.5.8"
   dependencies:
@@ -2465,6 +2465,7 @@ __metadata:
   dependencies:
     "@types/lodash": ^4.14.200
     "@types/node": ^20.8.7
+    "@types/ws": ^8.5.8
     axios: ^1.5.1
     discord.js: ^14.13.0
     dotenv: ^16.3.1
@@ -2481,6 +2482,7 @@ __metadata:
     tsconfig-paths: ^4.2.0
     tslib: ^2.6.2
     typescript: ^5.2.2
+    ws: ^8.14.2
   languageName: unknown
   linkType: soft
 
@@ -2533,7 +2535,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.13.0":
+"ws@npm:^8.13.0, ws@npm:^8.14.2":
   version: 8.14.2
   resolution: "ws@npm:8.14.2"
   peerDependencies:
