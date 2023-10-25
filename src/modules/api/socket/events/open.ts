@@ -7,9 +7,6 @@ export default function onOpen(socket: WebSocket, token: string) {
       args: [token],
     };
 
-    // const json = JSON.stringify(data);
-    // const buffer = Buffer.from(json);
-
     socket.send(JSON.stringify(data));
   });
 }

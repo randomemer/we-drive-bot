@@ -37,7 +37,9 @@ async function createWebsocket(server: ServerModel) {
   );
 
   // 2. Create a socket
-  const socket = new WebSocket(resp.data.data.socket);
+  const socket = new WebSocket(resp.data.data.socket, {
+    origin: "https://control.sparkedhost.us",
+  });
   sockets.set(server.id, socket);
 
   // 3. Configure listeners
