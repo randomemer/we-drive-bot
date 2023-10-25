@@ -11,9 +11,11 @@ const command: BotSubcommand = {
     .setDescription("Get list of servers"),
   async callback(interaction) {
     try {
-      const resp = await pterodactyl.get("/");
+      const resp = await pterodactyl.get<PanelAPIResp<PterodactylServer[]>>(
+        "/"
+      );
 
-      const content = resp.data.data.map((server: any, i: number) => [
+      const content = resp.data.data.map((server, i) => [
         i + 1,
         server.attributes.identifier,
         server.attributes.name,
