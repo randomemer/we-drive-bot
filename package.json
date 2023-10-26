@@ -2,7 +2,8 @@
   "name": "we-drive-bot",
   "packageManager": "yarn@3.6.4",
   "scripts": {
-    "dev": "node -r tsconfig-paths/register -r ts-node/register src/main.ts | pino-pretty",
+    "dev": "node -r tsconfig-paths/register -r ts-node/register src/main.ts",
+    "watch": "nodemon",
     "build": "tsc -p .",
     "start": "node dist/main.js"
   },
@@ -28,6 +29,7 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "tslib": "^2.6.2",
+    "tsx": "^3.14.0",
     "typescript": "^5.2.2"
   }
 }

@@ -44,7 +44,7 @@ async function createWebsocket(server: ServerModel) {
 
   // 3. Configure listeners
   onOpen(socket, resp.data.data.token);
-  onMessage(socket);
+  onMessage(socket, server);
   onError(socket);
   onClose(socket, server);
   onUnexpectedResp(socket, server);
