@@ -1,9 +1,16 @@
 import pterodactyl from "@/modules/api";
 import ServerModel from "@/modules/db/models/server";
 import logger from "@/modules/utils/logger";
-import { Client } from "discord.js";
+import {
+  Channel,
+  ChannelType,
+  Client,
+  inlineCode,
+  roleMention,
+} from "discord.js";
 import { ClientRequest, IncomingMessage } from "http";
 import { RawData, WebSocket } from "ws";
+import { defaultEmbed } from "@/modules/utils/functions";
 
 export default class ServerSocketManager {
   static managers = new Map<string, ServerSocketManager>();
@@ -59,19 +66,19 @@ export default class ServerSocketManager {
       });
 
       // Hook up event listener
-      this.socket.on("open", this.onOpen);
-      this.socket.on("message", this.onMessage);
-      this.socket.on("error", this.onError);
-      this.socket.on("close", this.onClose);
-      this.socket.on("unexpected-response", this.onUnexpectedResp);
+      this.socket.on("open", this.onOpen.bind(this));
+      this.socket.on("message", this.onMessage.bind(this));
+      this.socket.on("error", this.onError.bind(this));
+      this.socket.on("close", this.onClose.bind(this));
+      this.socket.on("unexpected-response", this.onUnexpectedResp.bind(this));
 
       logger.info(
-        `Created websocket for discord server ${this.server.id}, pterodactyl server : ${this.server.mc_server}`
+        `Created websocket (${this.server.id}, ${this.server.mc_server})`
       );
     } catch (error) {
       logger.error(
         error,
-        `Failed to create socket for discord server ${this.server.id}, pterodactyl server : ${this.server.mc_server}`
+        `Failed to create socket (${this.server.id}, ${this.server.mc_server})`
       );
     }
   }
@@ -89,19 +96,22 @@ export default class ServerSocketManager {
 
   private async onMessage(event: RawData, isBinary: Boolean) {
     const json = event.toString("utf8");
-    const message = JSON.parse(json);
+    const message: SocketEvent = JSON.parse(json);
 
-    switch (message.type) {
+    switch (message.event) {
       case "auth success":
         this.onAuthSuccess();
         break;
 
-      case "auth expiring":
-        this.onAuthExpiring();
+      case "status":
+        this.onStatus(message);
+
+      case "token expiring":
+        this.onTokenExpiring();
         break;
 
-      case "auth expired":
-        this.onAuthExpired();
+      case "token expired":
+        this.onTokenExpired();
         break;
 
       default:
@@ -141,7 +151,38 @@ export default class ServerSocketManager {
     );
   }
 
-  private async onAuthExpiring() {
+  private async onStatus(message: StatusEvent) {
+    const status = message.args[0];
+
+    const channelId = this.server.mc_channel;
+
+    // @TODO : Add a message per day saying this server does not have a default mc channel
+    if (!channelId) return;
+
+    let channel: Channel | undefined | null =
+      this.client.channels.cache.get(channelId);
+
+    if (!channel) {
+      channel = await this.client.channels.fetch(channelId, { force: true });
+    }
+    if (!channel) return;
+
+    if (channel.type !== ChannelType.GuildText) return;
+
+    const embed = defaultEmbed()
+      .setTitle("Server Status")
+      .setDescription(`Your server is ${status}`);
+
+    const mentionRole = this.server.mc_role;
+
+    await channel.send({
+      ...(mentionRole &&
+        status === "running" && { content: roleMention(mentionRole) }),
+      embeds: [embed],
+    });
+  }
+
+  private async onTokenExpiring() {
     const resp = await pterodactyl.get<SocketDetailsResp>(
       `/servers/${this.server.mc_server}/websocket`
     );
@@ -153,7 +194,7 @@ export default class ServerSocketManager {
     this.socket.send(JSON.stringify(data));
   }
 
-  private async onAuthExpired() {
+  private async onTokenExpired() {
     ServerSocketManager.managers.delete(this.server.id);
     logger.info(
       `Socket auth expired (${this.server.mc_server},${this.server.id})`

@@ -148,6 +148,38 @@ declare global {
   interface SocketDetailsResp {
     data: SocketDetails;
   }
+
+  interface GenericSocketEvent<T> {
+    event: T;
+  }
+
+  interface AuthSuccessEvent extends GenericSocketEvent<"auth success"> {}
+
+  interface StatusEvent extends GenericSocketEvent<"status"> {
+    args: [string];
+  }
+
+  interface ConsoleOutputEvent extends GenericSocketEvent<"console output"> {
+    args: [string];
+  }
+
+  type ServerStatus = "starting" | "running" | "stopping" | "offline";
+
+  interface StatsEvent extends GenericSocketEvent<"stats"> {
+    args: [ServerStatus];
+  }
+
+  interface TokenExpiringEvent extends GenericSocketEvent<"token expiring"> {}
+
+  interface TokenExpiredEvent extends GenericSocketEvent<"token expired"> {}
+
+  type SocketEvent =
+    | AuthSuccessEvent
+    | StatusEvent
+    | ConsoleOutputEvent
+    | StatsEvent
+    | TokenExpiringEvent
+    | TokenExpiredEvent;
 }
 
 export {};
