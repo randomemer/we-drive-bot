@@ -15,6 +15,8 @@ export default class ServerSocketManager {
       const manager = new ServerSocketManager(client, server);
       this.managers.set(server.id, manager);
     }
+
+    logger.info(`Created ${servers.length} pterodactyl sockets`);
   }
 
   static closeWebsockets() {

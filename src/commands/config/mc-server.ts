@@ -11,10 +11,10 @@ import {
 } from "discord.js";
 import { produce } from "immer";
 
-const command: BotSubcommand = {
+const mcServerCommand: BotSubcommand = {
   data: new SlashCommandSubcommandBuilder()
-    .setName("default")
-    .setDescription("Set the default server for all commands"),
+    .setName("minecraft_server")
+    .setDescription("Set the default server for all server commands"),
   async callback(interaction) {
     try {
       const resp = await pterodactyl.get<PanelAPIResp<PterodactylServer[]>>(
@@ -76,4 +76,4 @@ const command: BotSubcommand = {
   },
 };
 
-export default command;
+export default mcServerCommand;
