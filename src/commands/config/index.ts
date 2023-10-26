@@ -1,6 +1,7 @@
 import { registerSubcommands } from "@/modules/utils/functions";
 import { SlashCommandBuilder } from "discord.js";
 import mcRoleCommand from "./mc-role";
+import mcChannelCommand from "./mc-channel";
 
 const builder = new SlashCommandBuilder()
   .setName("config")
@@ -8,7 +9,7 @@ const builder = new SlashCommandBuilder()
 
 const command: BotCommand = {
   data: builder,
-  subCommands: registerSubcommands(builder, [mcRoleCommand]),
+  subCommands: registerSubcommands(builder, [mcRoleCommand, mcChannelCommand]),
 };
 
 export default command;
