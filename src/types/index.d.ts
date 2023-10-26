@@ -72,4 +72,15 @@ declare global {
   }
 }
 
+declare module "discord.js" {
+  interface Client {
+    // vars
+    slashCommands: Map<string, BotCommand>;
+
+    // function
+    registerEventListeners(): Promise<void>;
+    registerSlashCommands(): Promise<void>;
+  }
+}
+
 export {};

@@ -3,7 +3,7 @@ import { Model } from "objection";
 import ServerModel from "./models/server";
 import UserModel from "./models/user";
 
-const knex = createKnex({
+export const knex = createKnex({
   client: "mysql2",
   connection: {
     host: process.env.DB_HOST,

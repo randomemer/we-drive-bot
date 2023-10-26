@@ -17,7 +17,7 @@ export default class WeDriveClient extends Client {
     super(options);
   }
 
-  async registerSlashCommands() {
+  async registerSlashCommands(): Promise<void> {
     const folderContents = fs.readdirSync(path.join(__dirname, "commands"));
     const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 
@@ -53,7 +53,7 @@ export default class WeDriveClient extends Client {
     }
   }
 
-  async registerEventListeners() {
+  async registerEventListeners(): Promise<void> {
     let files = fs.readdirSync(path.join(__dirname, "events"));
     files = files.filter((file) => file.endsWith(".ts"));
 
