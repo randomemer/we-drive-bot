@@ -58,7 +58,7 @@ const command: BotSubcommand = {
         const id = int.values[0];
         await ServerModel.query()
           .where("id", int.guildId)
-          .patch({ default_server: id });
+          .patch({ mc_server: id });
 
         const editedEmbed = produce(reply.embeds[0].toJSON(), (embed) => {
           embed.description = "✅ Sucessfully changed default server";

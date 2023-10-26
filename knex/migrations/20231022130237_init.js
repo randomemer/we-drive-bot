@@ -6,8 +6,9 @@ exports.up = async function (knex) {
   if (!(await knex.schema.hasTable("servers"))) {
     await knex.schema.createTable("servers", (table) => {
       table.string("id").primary();
-      table.string("default_server").nullable();
-      table.string("minecraft_role").nullable();
+      table.string("mc_server");
+      table.string("mc_role");
+      table.string("mc_channel");
       table.datetime("created_at").defaultTo(knex.raw("CURRENT_TIMESTAMP()"));
       table.datetime("updated_at").defaultTo(knex.raw("CURRENT_TIMESTAMP()"));
     });

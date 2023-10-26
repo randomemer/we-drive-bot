@@ -12,19 +12,19 @@ const sockets = new Map<string, WebSocket>();
 
 export async function initWebsockets() {
   // 1. Fetch all servers
-  const servers = await ServerModel.query().whereNotNull("default_server");
+  const servers = await ServerModel.query().whereNotNull("mc_server");
 
   // 2. Create sockets for each server
   for (const server of servers) {
     try {
       await createWebsocket(server);
       logger.info(
-        `Created websocket for discord server ${server.id}, pterodactyl server : ${server.default_server}`
+        `Created websocket for discord server ${server.id}, pterodactyl server : ${server.mc_server}`
       );
     } catch (error) {
       logger.error(
         error,
-        `Failed to create socket for discord server ${server.id}, pterodactyl server : ${server.default_server}`
+        `Failed to create socket for discord server ${server.id}, pterodactyl server : ${server.mc_server}`
       );
     }
   }
@@ -33,7 +33,7 @@ export async function initWebsockets() {
 async function createWebsocket(server: ServerModel) {
   // 1. Fetch the socker details
   const resp = await pterodactyl.get<SocketDetailsResp>(
-    `/servers/${server.default_server}/websocket`
+    `/servers/${server.mc_server}/websocket`
   );
 
   // 2. Create a socket

@@ -2,8 +2,9 @@ import { Model, ModelObject } from "objection";
 
 class ServerModel extends Model {
   id: string;
-  minecraft_role: string | null;
-  default_server: string | null;
+  mc_role: string | null;
+  mc_server: string | null;
+  mc_channel: string | null;
   created_at: Date;
   updated_at: Date;
 
