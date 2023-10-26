@@ -2,7 +2,7 @@ import pterodactyl from "@/modules/api";
 import * as utils from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
-import { Colors, SlashCommandSubcommandBuilder } from "discord.js";
+import { SlashCommandSubcommandBuilder, codeBlock } from "discord.js";
 import { table } from "table";
 
 const command: BotSubcommand = {
@@ -26,16 +26,15 @@ const command: BotSubcommand = {
         content,
         builder(items, meta) {
           const headers = ["#", "ID", "Name", "Description"];
+          const embed = utils
+            .defaultEmbed()
+            .setURL("https://control.sparkedhost.us/")
+            .setTitle("Servers")
+            .setDescription(codeBlock(table([headers, ...items])))
+            .setFooter({ text: utils.getPageFooter(meta) });
+
           return {
-            embeds: [
-              {
-                color: Colors.DarkVividPink,
-                url: "https://control.sparkedhost.us/",
-                title: "Servers",
-                description: "```" + table([headers, ...items]) + "```",
-                footer: { text: utils.getPageFooter(meta) },
-              },
-            ],
+            embeds: [embed],
           };
         },
       });

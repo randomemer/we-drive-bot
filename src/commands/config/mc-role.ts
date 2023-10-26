@@ -1,4 +1,5 @@
 import ServerModel from "@/modules/db/models/server";
+import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import {
   Colors,
@@ -22,7 +23,7 @@ const mcRoleCommand: BotSubcommand = {
     try {
       const role = interaction.options.getRole("role", true);
 
-      const embed = new EmbedBuilder().setColor(Colors.DarkVividPink);
+      const embed = defaultEmbed();
 
       if (!role.mentionable) {
         embed

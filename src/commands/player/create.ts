@@ -5,10 +5,12 @@ import {
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
   codeBlock,
+  inlineCode,
 } from "discord.js";
 import axios from "axios";
 import { UUID_TOOL_API } from "@/modules/utils/constants";
 import UserModel from "@/modules/db/models/user";
+import { defaultEmbed } from "@/modules/utils/functions";
 
 const createCommand: BotSubcommand = {
   data: new SlashCommandSubcommandBuilder()
@@ -27,15 +29,12 @@ const createCommand: BotSubcommand = {
       const exists = await UserModel.query().findById(interaction.user.id);
 
       if (exists) {
-        const embed = new EmbedBuilder()
-          .setColor(Colors.DarkVividPink)
-          .setTitle("Your profile already exists")
-          .setDescription(
-            codeBlock(
-              `- Username : ${exists.mc_name}\n- UUID : ${exists.mc_uuid}`
-            )
-          );
-
+        const embed = defaultEmbed()
+          .setTitle(inlineCode("Your profile already exists"))
+          .addFields([
+            { name: "Username", value: inlineCode(exists.mc_name ?? "<nil>") },
+            { name: "UUID", value: inlineCode(exists.mc_uuid ?? "<nil>") },
+          ]);
         await interaction.editReply({ embeds: [embed] });
         return;
       }
@@ -51,13 +50,11 @@ const createCommand: BotSubcommand = {
         mc_uuid: uuid,
       });
 
-      const embed = new EmbedBuilder()
-        .setTitle("Player Created")
-        .setColor(Colors.DarkVividPink)
-        .setDescription("✅ Successfully created your profile")
+      const embed = defaultEmbed()
+        .setTitle(inlineCode("✅ Player Profile Created"))
         .addFields([
-          { name: "Username", value: username },
-          { name: "UUID", value: uuid },
+          { name: "Username", value: inlineCode(username) },
+          { name: "UUID", value: inlineCode(uuid) },
         ]);
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {

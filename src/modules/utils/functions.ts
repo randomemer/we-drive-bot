@@ -1,4 +1,6 @@
 import {
+  Colors,
+  EmbedBuilder,
   SlashCommandBuilder,
   SlashCommandSubcommandGroupBuilder,
 } from "discord.js";
@@ -35,4 +37,8 @@ export function registerSubcommandGroups(
   });
 
   return map;
+}
+
+export function defaultEmbed() {
+  return new EmbedBuilder().setColor(Colors.DarkVividPink);
 }

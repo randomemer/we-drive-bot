@@ -1,14 +1,15 @@
 import { SlashCommandBuilder } from "discord.js";
 
 import listCommand from "./list";
+import { registerSubcommands } from "@/modules/utils/functions";
+
+const builder = new SlashCommandBuilder()
+  .setName("servers")
+  .setDescription("Commands related to servers");
 
 const command: BotCommand = {
-  data: new SlashCommandBuilder()
-    .setName("servers")
-    .setDescription("Commands related to servers"),
-  subCommands: new Map([[listCommand.data.name, listCommand]]),
+  data: builder,
+  subCommands: registerSubcommands(builder, [listCommand]),
 };
-
-command.data.addSubcommand(listCommand.data);
 
 export default command;
