@@ -7,7 +7,7 @@ const builder = new SlashCommandBuilder()
   .setName("servers")
   .setDescription("Commands related to servers");
 
-const command: BotCommand = {
+const command: BotCommandRoot = {
   data: builder,
   subCommands: registerSubcommands(builder, [listCommand]),
 };

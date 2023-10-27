@@ -1,16 +1,13 @@
+import UserModel from "@/modules/db/models/user";
+import { UUID_TOOL_API } from "@/modules/utils/constants";
+import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
+import axios from "axios";
 import {
-  Colors,
-  EmbedBuilder,
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
-  codeBlock,
   inlineCode,
 } from "discord.js";
-import axios from "axios";
-import { UUID_TOOL_API } from "@/modules/utils/constants";
-import UserModel from "@/modules/db/models/user";
-import { defaultEmbed } from "@/modules/utils/functions";
 
 const createCommand: BotSubcommand = {
   data: new SlashCommandSubcommandBuilder()

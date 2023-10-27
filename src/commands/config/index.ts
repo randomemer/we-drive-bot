@@ -8,7 +8,7 @@ const builder = new SlashCommandBuilder()
   .setName("config")
   .setDescription("Manage the bot's settings");
 
-const command: BotCommand = {
+const command: BotCommandRoot = {
   data: builder,
   subCommands: registerSubcommands(builder, [
     mcRoleCommand,

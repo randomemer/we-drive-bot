@@ -1,4 +1,5 @@
 import {
+  AutocompleteInteraction,
   Awaitable,
   ChatInputCommandInteraction,
   Client,
@@ -10,64 +11,59 @@ import {
 } from "discord.js";
 
 declare global {
-  export interface ListenerConfig<K extends keyof ClientEvents> {
+  interface ListenerConfig<K extends keyof ClientEvents> {
     name: K;
     listener(...args: ClientEvents[K]): Awaitable<void>;
-  }
-
-  export interface BaristaClient extends Client {
-    botToken: string;
-    clientId: string;
-    guildId: string;
   }
 
   // ====================================
   // Bot Commands
   // ====================================
 
-  export interface BotCommandSingular {
-    data: SlashCommandBuilder;
-    callback(interaction: ChatInputCommandInteraction): Promise<void>;
+  interface ICommand<T> {
+    data: T;
   }
 
-  export interface BotCommandNested {
-    data: SlashCommandBuilder;
+  interface BotCommandExecutable<T> extends ICommand<T> {
+    callback(interaction: ChatInputCommandInteraction): Promise<void>;
+    autocomplete?(interaction: AutocompleteInteraction): Promise<void>;
+  }
+
+  type BotCommandRoot = BotCommandRootExecutable | BotCommandRootNonExecutable;
+
+  interface BotCommandRootExecutable
+    extends BotCommandExecutable<SlashCommandBuilder> {}
+
+  interface BotCommandRootNonExecutable extends ICommand<SlashCommandBuilder> {
     subCommands?: Map<string, BotSubcommand>;
     subCommandGroups?: Map<string, BotSubcommandGroup>;
   }
 
-  export type BotCommand = BotCommandSingular | BotCommandNested;
-
-  export interface BotSubcommandGroup {
-    data: SlashCommandSubcommandGroupBuilder;
+  interface BotSubcommandGroup
+    extends ICommand<SlashCommandSubcommandGroupBuilder> {
     subCommands: Map<string, BotSubcommand>;
   }
+  interface BotSubcommand
+    extends BotCommandExecutable<SlashCommandSubcommandBuilder> {}
 
-  export interface BotSubcommand {
-    data: SlashCommandSubcommandBuilder;
-    callback(interaction: ChatInputCommandInteraction): Promise<void>;
-  }
-
-  //
-
-  export type BuilderFunctionMetadata = {
+  type BuilderFunctionMetadata = {
     curPage: number;
     maxPage: number;
     pageSize: number;
     total: number;
   };
 
-  export type BuilderFunction<T> = (
+  type BuilderFunction<T> = (
     items: T[],
     meta: BuilderFunctionMetadata
   ) => InteractionEditReplyOptions;
 
-  export interface PaginatedEmbedMessageData<T> {
+  interface PaginatedEmbedMessageData<T> {
     content: T[];
     builder: BuilderFunction<T>;
   }
 
-  export interface PaginatedEmbedMessageOptions {
+  interface PaginatedEmbedMessageOptions {
     pageSize: number;
   }
 
@@ -77,12 +73,20 @@ declare global {
     description: string;
     category: string;
   }
+
+  interface AdvancementProgress {
+    criteria: Partial<Record<string, string>>;
+    done: Boolean;
+  }
+
+  interface PlayerAdvancements
+    extends Partial<Record<string, AdvancementProgress>> {}
 }
 
 declare module "discord.js" {
   interface Client {
     // vars
-    slashCommands: Map<string, BotCommand>;
+    slashCommands: Map<string, BotCommandRoot>;
 
     // function
     registerEventListeners(): Promise<void>;

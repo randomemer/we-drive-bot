@@ -1,6 +1,8 @@
 import {
+  ChatInputCommandInteraction,
   Colors,
   EmbedBuilder,
+  Interaction,
   SlashCommandBuilder,
   SlashCommandSubcommandGroupBuilder,
 } from "discord.js";
@@ -41,4 +43,30 @@ export function registerSubcommandGroups(
 
 export function defaultEmbed() {
   return new EmbedBuilder().setColor(Colors.DarkVividPink);
+}
+
+export function getExecutableCmd(interaction: Interaction) {
+  if (!interaction.isChatInputCommand() || interaction.isAutocomplete()) return;
+
+  const { client } = interaction;
+
+  const botCommand = client.slashCommands.get(interaction.commandName);
+  if (!botCommand) return;
+  if ("callback" in botCommand) return botCommand;
+
+  const subCmdGroupName = interaction.options.getSubcommandGroup();
+  const subCmdName = interaction.options.getSubcommand();
+
+  // Check if there's a sub command group
+  if (subCmdGroupName && botCommand.subCommandGroups) {
+    const subCmdGroup = botCommand.subCommandGroups.get(subCmdGroupName)!;
+    const subCmd = subCmdGroup.subCommands.get(subCmdName)!;
+    return subCmd;
+  }
+
+  // Check if there's a subcommand
+  if (subCmdName && botCommand.subCommands) {
+    const subCmd = botCommand.subCommands!.get(subCmdName)!;
+    return subCmd;
+  }
 }

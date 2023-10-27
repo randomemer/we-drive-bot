@@ -11,7 +11,7 @@ import path from "node:path";
 import logger from "@/modules/utils/logger";
 
 export default class WeDriveClient extends Client {
-  slashCommands = new Map<string, BotCommand>();
+  slashCommands = new Map<string, BotCommandRoot>();
 
   constructor(options: ClientOptions) {
     super(options);
@@ -23,7 +23,7 @@ export default class WeDriveClient extends Client {
 
     for (const item of folderContents) {
       const commandPath = path.join(__dirname, "commands", item);
-      const command: BotCommand = require(commandPath).default;
+      const command: BotCommandRoot = require(commandPath).default;
 
       commands.push(command.data.toJSON());
 

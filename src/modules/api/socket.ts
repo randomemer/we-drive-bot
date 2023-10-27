@@ -1,17 +1,16 @@
 import pterodactyl from "@/modules/api";
 import ServerModel from "@/modules/db/models/server";
+import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import {
   Channel,
   ChannelType,
   Client,
   MessageCreateOptions,
-  inlineCode,
   roleMention,
 } from "discord.js";
 import { ClientRequest, IncomingMessage } from "http";
 import { RawData, WebSocket } from "ws";
-import { defaultEmbed } from "@/modules/utils/functions";
 
 export default class ServerSocketManager {
   static managers = new Map<string, ServerSocketManager>();
