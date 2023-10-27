@@ -70,6 +70,13 @@ declare global {
   export interface PaginatedEmbedMessageOptions {
     pageSize: number;
   }
+
+  interface Advancement {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+  }
 }
 
 declare module "discord.js" {

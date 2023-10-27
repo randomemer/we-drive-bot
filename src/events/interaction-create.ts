@@ -1,16 +1,14 @@
-import WeDriveClient from "@/bot";
-
 const config: ListenerConfig<"interactionCreate"> = {
   name: "interactionCreate",
   listener: async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
     await interaction.deferReply();
-    const client = interaction.client as WeDriveClient;
+    const client = interaction.client;
 
     const botCommand = client.slashCommands.get(interaction.commandName);
     if (!botCommand) {
-      interaction.reply("No such bot command found");
+      await interaction.editReply("No such bot command found");
       return;
     }
 
@@ -23,7 +21,8 @@ const config: ListenerConfig<"interactionCreate"> = {
 
     // with subcommand groups @TODO
     const subCmdGroup = interaction.options.getSubcommandGroup();
-    if (subCmdGroup) {
+    if (subCmdGroup && "subCommandGroups" in botCommand) {
+      botCommand.subCommandGroups?.get("");
     }
   },
 };

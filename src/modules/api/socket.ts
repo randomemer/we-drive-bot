@@ -5,6 +5,7 @@ import {
   Channel,
   ChannelType,
   Client,
+  MessageCreateOptions,
   inlineCode,
   roleMention,
 } from "discord.js";
@@ -105,6 +106,15 @@ export default class ServerSocketManager {
 
       case "status":
         this.onStatus(message);
+        break;
+
+      case "console output":
+        this.onConsoleOutput(message);
+        break;
+
+      case "stats":
+        this.onStats(message);
+        break;
 
       case "token expiring":
         this.onTokenExpiring();
@@ -173,13 +183,23 @@ export default class ServerSocketManager {
       .setTitle("Server Status")
       .setDescription(`Your server is ${status}`);
 
-    const mentionRole = this.server.mc_role;
+    const role = this.server.mc_role;
 
-    await channel.send({
-      ...(mentionRole &&
-        status === "running" && { content: roleMention(mentionRole) }),
+    const payload: MessageCreateOptions = {
       embeds: [embed],
-    });
+    };
+    if (role && status === "running") {
+      payload.content = roleMention(role);
+    }
+    await channel.send(payload);
+  }
+
+  private async onStats(message: StatsEvent) {
+    logger.info(message);
+  }
+
+  private async onConsoleOutput(message: ConsoleOutputEvent) {
+    logger.info(message);
   }
 
   private async onTokenExpiring() {
