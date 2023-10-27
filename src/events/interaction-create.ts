@@ -30,7 +30,7 @@ async function handleChatInput(
 async function handleAutocomplete(interaction: AutocompleteInteraction) {
   const cmd = getExecutableCmd(interaction);
   if (!cmd || !cmd.autocomplete) return;
-  cmd.autocomplete!(interaction);
+  await cmd.autocomplete(interaction);
 }
 
 export default config;

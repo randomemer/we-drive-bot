@@ -13,7 +13,7 @@ services:
   bot:
     build:
       context: .
-      dockerfile: ./docker/bot.dockerfile
+      dockerfile: ./docker/bot.dev.dockerfile
     env_file:
       - .env
     depends_on:

@@ -11,12 +11,17 @@ import ServerModel from "@/modules/db/models/server";
 import { table } from "table";
 import _ from "lodash";
 import { defaultEmbed } from "@/modules/utils/functions";
+import MiniSearch, { SearchResult } from "minisearch";
 
-const choices: APIApplicationCommandOptionChoice<string>[] = advancements.map(
-  (item) => {
-    return { name: item.title, value: item.id };
-  }
-);
+const minisearch = new MiniSearch<Advancement>({
+  fields: ["title"],
+  storeFields: ["id", "title"],
+  searchOptions: {
+    fuzzy: 0.5,
+  },
+});
+
+minisearch.addAll(advancements);
 
 const advancementsCommand: BotSubcommand = {
   data: new SlashCommandSubcommandBuilder()
@@ -27,7 +32,7 @@ const advancementsCommand: BotSubcommand = {
         .setName("title")
         .setDescription("Name of the advancment")
         .setRequired(true)
-        .setChoices(...choices.slice(0, 25))
+        .setAutocomplete(true)
     ),
   async callback(interaction) {
     try {
@@ -55,32 +60,42 @@ const advancementsCommand: BotSubcommand = {
         return;
       }
 
-      logger.info(advProgress);
-
       const headerRow = ["Criteria", "Timestamp"];
       const bodyRows = _.entries(advProgress.criteria).map(([k, v]) => [
-        k,
+        _.trimStart(k, "minecraft:"),
         new Date(v!).toUTCString(),
       ]);
       const rows: string[][] = [headerRow, ...bodyRows];
       const tableString = codeBlock(table(rows));
 
-      const embed = defaultEmbed()
-        .setDescription(tableString)
-        .addFields(
-          { name: "Category", value: advancement.category, inline: true },
-          { name: "Completed", value: String(advProgress.done), inline: true },
-          { name: "Title", value: advancement.title },
-          { name: "Description", value: advancement.description }
-        );
+      const titleEmbed = defaultEmbed().addFields(
+        { name: "Category", value: advancement.category, inline: true },
+        { name: "Completed", value: String(advProgress.done), inline: true },
+        { name: "Title", value: advancement.title },
+        { name: "Description", value: advancement.description }
+      );
 
-      await interaction.editReply({ embeds: [embed] });
+      const descEmbed = defaultEmbed().setDescription(tableString);
+      console.log(tableString.length);
+
+      await interaction.editReply({ embeds: [titleEmbed, descEmbed] });
     } catch (error) {
       logger.error(error);
     }
   },
   async autocomplete(interaction) {
     try {
+      const query = interaction.options.getFocused();
+      const results = minisearch.search(query) as (SearchResult &
+        Pick<Advancement, "id" | "title">)[];
+
+      const choices = results
+        .map((item) => ({
+          name: item.title,
+          value: item.id,
+        }))
+        .slice(0, 25);
+      await interaction.respond(choices);
     } catch (error) {
       logger.error(error);
     }

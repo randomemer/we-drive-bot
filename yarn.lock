@@ -3320,6 +3320,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"minisearch@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "minisearch@npm:6.2.0"
+  checksum: e52d8f4e363a47e85be6d609573b534796da23dca66a96b21e3d7a9043a12ab18fffc7cf45aa9f7b68059ad1768b2d1454eef370491541a19ba33e2f94556117
+  languageName: node
+  linkType: hard
+
 "minizlib@npm:^2.1.1, minizlib@npm:^2.1.2":
   version: 2.1.2
   resolution: "minizlib@npm:2.1.2"
@@ -5509,6 +5516,7 @@ __metadata:
     jsdom: ^22.1.0
     knex: ^3.0.1
     lodash: ^4.17.21
+    minisearch: ^6.2.0
     mysql2: ^3.6.2
     nodemon: ^3.0.1
     objection: ^3.1.2

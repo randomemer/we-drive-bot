@@ -4,6 +4,7 @@ yml := docker-compose.yml
 
 start:
 	docker compose -f $(yml) start
+	docker compose logs -f
 
 stop:
 	docker compose -f $(yml) stop

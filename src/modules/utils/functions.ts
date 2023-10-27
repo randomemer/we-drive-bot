@@ -1,4 +1,5 @@
 import {
+  AutocompleteInteraction,
   ChatInputCommandInteraction,
   Colors,
   EmbedBuilder,
@@ -45,9 +46,9 @@ export function defaultEmbed() {
   return new EmbedBuilder().setColor(Colors.DarkVividPink);
 }
 
-export function getExecutableCmd(interaction: Interaction) {
-  if (!interaction.isChatInputCommand() || interaction.isAutocomplete()) return;
-
+export function getExecutableCmd(
+  interaction: ChatInputCommandInteraction | AutocompleteInteraction
+) {
   const { client } = interaction;
 
   const botCommand = client.slashCommands.get(interaction.commandName);
