@@ -1,17 +1,17 @@
+import advancements from "@/assets/advancements.json";
+import pterodactyl from "@/modules/api";
+import ServerModel from "@/modules/db/models/server";
+import UserModel from "@/modules/db/models/user";
+import { defaultEmbed } from "@/modules/utils/functions";
+import logger from "@/modules/utils/logger";
 import {
-  APIApplicationCommandOptionChoice,
+  EmbedBuilder,
   SlashCommandSubcommandBuilder,
   codeBlock,
 } from "discord.js";
-import advancements from "@/assets/advancements.json";
-import logger from "@/modules/utils/logger";
-import UserModel from "@/modules/db/models/user";
-import pterodactyl from "@/modules/api";
-import ServerModel from "@/modules/db/models/server";
-import { table } from "table";
 import _ from "lodash";
-import { defaultEmbed } from "@/modules/utils/functions";
 import MiniSearch, { SearchResult } from "minisearch";
+import { table } from "table";
 
 const minisearch = new MiniSearch<Advancement>({
   fields: ["title"],
@@ -62,11 +62,9 @@ const advancementsCommand: BotSubcommand = {
 
       const headerRow = ["Criteria", "Timestamp"];
       const bodyRows = _.entries(advProgress.criteria).map(([k, v]) => [
-        _.trimStart(k, "minecraft:"),
+        k.replace("minecraft:", ""),
         new Date(v!).toUTCString(),
       ]);
-      const rows: string[][] = [headerRow, ...bodyRows];
-      const tableString = codeBlock(table(rows));
 
       const titleEmbed = defaultEmbed().addFields(
         { name: "Category", value: advancement.category, inline: true },
@@ -75,10 +73,15 @@ const advancementsCommand: BotSubcommand = {
         { name: "Description", value: advancement.description }
       );
 
-      const descEmbed = defaultEmbed().setDescription(tableString);
-      console.log(tableString.length);
+      // Handle discord message limit of 4096 chars
+      const embeds: EmbedBuilder[] = [];
+      while (bodyRows.length > 0) {
+        const batch = bodyRows.splice(0, 35);
+        const tableStr = codeBlock(table([headerRow, ...batch]));
+        embeds.push(defaultEmbed().setDescription(tableStr));
+      }
 
-      await interaction.editReply({ embeds: [titleEmbed, descEmbed] });
+      await interaction.editReply({ embeds: [titleEmbed, ...embeds] });
     } catch (error) {
       logger.error(error);
     }

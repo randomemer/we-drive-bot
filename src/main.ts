@@ -1,9 +1,9 @@
-import WeDriveClient from "@/bot";
-import ServerSocketManager from "@/modules/api/socket";
-import "@/modules/db";
-import { knex } from "@/modules/db";
-import logger from "@/modules/utils/logger";
 import dotenv from "dotenv";
+import WeDriveClient from "./bot";
+import ServerSocketManager from "./modules/api/socket";
+import "./modules/db";
+import { knex } from "./modules/db";
+import logger from "./modules/utils/logger";
 
 dotenv.config();
 

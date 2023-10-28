@@ -2,11 +2,12 @@
   "name": "we-drive-bot",
   "packageManager": "yarn@3.6.4",
   "scripts": {
-    "pre-dev": "node -r tsconfig-paths/register -r ts-node/register src/modules/scraper/advancements.ts",
-    "dev": "node -r tsconfig-paths/register -r ts-node/register src/main.ts",
+    "predev": "tsx src/modules/scraper/advancements.ts",
+    "dev": "tsx src/main.ts",
     "watch": "nodemon",
     "typecheck": "tsc --noEmit",
-    "build": "tsc -p . && yarn copy-files",
+    "build": "tsc",
+    "prestart": "node dist/modules/scraper/advancements.ts",
     "start": "node dist/main.js"
   },
   "dependencies": {
@@ -29,15 +30,13 @@
     "@types/lodash": "^4.14.200",
     "@types/node": "^20.8.7",
     "@types/ws": "^8.5.8",
-    "gulp": "^4.0.2",
-    "gulp-sourcemaps": "^3.0.0",
-    "gulp-ts-alias": "^2.0.0",
-    "gulp-typescript": "^6.0.0-alpha.1",
+    "grunt": "^1.6.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-ts": "^6.0.0-beta.22",
     "nodemon": "^3.0.1",
     "pino-pretty": "^10.2.3",
-    "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.2.0",
     "tslib": "^2.6.2",
+    "tsx": "^3.14.0",
     "typescript": "^5.2.2"
   }
 }

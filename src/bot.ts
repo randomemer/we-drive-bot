@@ -8,7 +8,7 @@ import {
 } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
-import logger from "@/modules/utils/logger";
+import logger from "./modules/utils/logger";
 
 export default class WeDriveClient extends Client {
   slashCommands = new Map<string, BotCommandRoot>();
