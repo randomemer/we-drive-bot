@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . .
 RUN yarn install
 RUN yarn build
-RUN knex migrate:latest --env prod
+RUN yarn knex migrate:latest --env prod
 RUN yarn prestart
 
 CMD [ "yarn", "start" ]
