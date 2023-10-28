@@ -51,6 +51,7 @@ async function fetchAdvancements() {
   });
 
   const data = JSON.stringify(advancements);
+  console.log("ENV", process.env.NODE_ENV);
   const pkgDir = process.env.NODE_ENV === "prod" ? "dist" : "src";
   const outPath = path.join(
     process.cwd(),
