@@ -6,8 +6,8 @@
     "dev": "tsx src/main.ts",
     "watch": "nodemon",
     "typecheck": "tsc --noEmit",
-    "build": "tsc",
-    "prestart": "node dist/modules/scraper/advancements.ts",
+    "build": "grunt build --force",
+    "prestart": "node dist/modules/scraper/advancements.js",
     "start": "node dist/main.js"
   },
   "dependencies": {
@@ -32,9 +32,11 @@
     "@types/ws": "^8.5.8",
     "grunt": "^1.6.1",
     "grunt-contrib-copy": "^1.0.0",
+    "grunt-exec": "^3.0.0",
     "grunt-ts": "^6.0.0-beta.22",
     "nodemon": "^3.0.1",
     "pino-pretty": "^10.2.3",
+    "tsc-alias": "^1.8.8",
     "tslib": "^2.6.2",
     "tsx": "^3.14.0",
     "typescript": "^5.2.2"
