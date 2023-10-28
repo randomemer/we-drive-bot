@@ -3,10 +3,11 @@ import {
   ChatInputCommandInteraction,
   Colors,
   EmbedBuilder,
-  Interaction,
   SlashCommandBuilder,
   SlashCommandSubcommandGroupBuilder,
 } from "discord.js";
+import fs from "node:fs";
+import path from "node:path";
 
 export function getPageFooter(meta: BuilderFunctionMetadata) {
   return `Showing ${meta.curPage * meta.pageSize + 1} - ${
@@ -70,4 +71,11 @@ export function getExecutableCmd(
     const subCmd = botCommand.subCommands!.get(subCmdName)!;
     return subCmd;
   }
+}
+
+export function getAllAdvancements(): Advancement[] {
+  const filePath = path.join(process.cwd(), "assets", "advancements.json");
+  const buffer = fs.readFileSync(filePath);
+  const content = buffer.toString("utf8");
+  return JSON.parse(content);
 }

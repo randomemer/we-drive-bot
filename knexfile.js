@@ -1,16 +1,14 @@
-// Update with your config settings.
-
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
  */
 module.exports = {
-  development: {
+  dev: {
     client: "mysql2",
     connection: {
-      user: "root",
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
       host: process.env.DB_HOST,
-      database: process.env.MYSQL_DATABASE,
-      password: process.env.MYSQL_ROOT_PASSWORD,
+      database: process.env.DB_NAME,
     },
     migrations: {
       directory: "./knex/migrations",
@@ -20,13 +18,13 @@ module.exports = {
     },
   },
 
-  production: {
+  prod: {
     client: "mysql2",
     connection: {
-      user: "root",
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
       host: process.env.DB_HOST,
-      database: process.env.MYSQL_DATABASE,
-      password: process.env.MYSQL_ROOT_PASSWORD,
+      database: process.env.DB_NAME,
     },
     pool: {
       min: 2,

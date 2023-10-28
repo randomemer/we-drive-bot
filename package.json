@@ -6,7 +6,7 @@
     "dev": "tsx src/main.ts",
     "watch": "nodemon",
     "typecheck": "tsc --noEmit",
-    "build": "grunt build --force",
+    "build": "grunt build",
     "prestart": "node dist/modules/scraper/advancements.js",
     "start": "node dist/main.js"
   },

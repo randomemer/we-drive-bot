@@ -5,7 +5,7 @@ import "./modules/db";
 import { knex } from "./modules/db";
 import logger from "./modules/utils/logger";
 
-dotenv.config();
+dotenv.config({ path: `env/.env.${process.env.NODE_ENV}` });
 
 const client = new WeDriveClient({
   intents: ["GuildMessages", "MessageContent", "Guilds"],

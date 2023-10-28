@@ -1,7 +1,7 @@
 import { registerSubcommands } from "@/modules/utils/functions";
 import { SlashCommandBuilder } from "discord.js";
-import mcRoleCommand from "./mc-role";
 import mcChannelCommand from "./mc-channel";
+import mcRoleCommand from "./mc-role";
 import mcServerCommand from "./mc-server";
 
 const builder = new SlashCommandBuilder()

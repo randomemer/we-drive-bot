@@ -2,11 +2,9 @@ import ServerModel from "@/modules/db/models/server";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import {
-  Colors,
-  EmbedBuilder,
   SlashCommandRoleOption,
   SlashCommandSubcommandBuilder,
-  roleMention,
+  roleMention
 } from "discord.js";
 
 const mcRoleCommand: BotSubcommand = {

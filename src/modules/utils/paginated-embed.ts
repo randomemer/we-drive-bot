@@ -7,6 +7,7 @@ import type {
 } from "discord.js";
 import { ButtonStyle, ComponentType } from "discord.js";
 import { produce } from "immer";
+import _ from "lodash";
 
 export default class PaginatedEmbedMessage<T> {
   private pageIndex: number = 0;
@@ -15,7 +16,6 @@ export default class PaginatedEmbedMessage<T> {
 
   readonly items: T[];
   readonly builder: BuilderFunction<T>;
-  readonly pageSize: number = 10;
   readonly maxPageIndex: number;
   private paginationRowComponents: APIActionRowComponent<APIButtonComponentWithCustomId> =
     {
@@ -48,6 +48,8 @@ export default class PaginatedEmbedMessage<T> {
       ],
     };
 
+  options: PaginatedEmbedMessageOptions;
+
   hasPrevious(page: number): boolean {
     return page !== 0;
   }
@@ -61,18 +63,22 @@ export default class PaginatedEmbedMessage<T> {
     options?: Partial<PaginatedEmbedMessageOptions>
   ) {
     if (options !== undefined) {
-      this.pageSize = options.pageSize || this.pageSize;
+      this.options = _.defaults(this.options, {
+        pageSize: 10,
+        btnTimeout: 60_000,
+      });
     }
 
     this.items = data.content;
-    this.maxPageIndex = Math.ceil(this.items.length / this.pageSize) - 1;
+    this.maxPageIndex =
+      Math.ceil(this.items.length / this.options.pageSize) - 1;
     this.builder = data.builder;
   }
 
   pageBuilder(page: number): InteractionEditReplyOptions {
     const items = this.items.slice(
-      page * this.pageSize,
-      (page + 1) * this.pageSize
+      page * this.options.pageSize,
+      (page + 1) * this.options.pageSize
     );
 
     const actionRow = produce(this.paginationRowComponents, (cmps) => {
@@ -91,7 +97,7 @@ export default class PaginatedEmbedMessage<T> {
       ...this.builder(items, {
         curPage: page,
         maxPage: this.maxPageIndex,
-        pageSize: this.pageSize,
+        pageSize: this.options.pageSize,
         total: this.items.length,
       }),
       components: [actionRow],
@@ -105,7 +111,7 @@ export default class PaginatedEmbedMessage<T> {
     this.message = await interaction.editReply(this.pageBuilder(0));
 
     const collector = this.message!.createMessageComponentCollector({
-      time: 0.1 * 60 * 1_000,
+      time: 60 * 1_000,
       componentType: ComponentType.Button,
     });
 

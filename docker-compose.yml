@@ -4,7 +4,10 @@ services:
   db:
     image: mysql:latest
     env_file:
-      - .env
+      - ./env/.env.${NODE_ENV}
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     networks:
       - drive
     volumes:
@@ -13,9 +16,9 @@ services:
   bot:
     build:
       context: .
-      dockerfile: ./docker/bot.dev.dockerfile
+      dockerfile: ./docker/Dockerfile.${NODE_ENV}
     env_file:
-      - .env
+      - ./env/.env.${NODE_ENV}
     depends_on:
       - db
     networks:

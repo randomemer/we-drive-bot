@@ -65,6 +65,7 @@ declare global {
 
   interface PaginatedEmbedMessageOptions {
     pageSize: number;
+    btnTimeout: number;
   }
 
   interface Advancement {

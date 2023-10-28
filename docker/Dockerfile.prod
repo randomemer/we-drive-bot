@@ -1,16 +1,10 @@
-FROM node:18
+FROM node:18-alpine
 
-# Clone bot source code and spin it up
 WORKDIR /app
-
 COPY . .
-
 RUN yarn install
-
-RUN yarn knex migrate:latest
-
 RUN yarn build
-
+RUN yarn knex migrate:latest
 RUN yarn prestart
 
 CMD [ "yarn", "start" ]

@@ -6,10 +6,10 @@ import UserModel from "./models/user";
 export const knex = createKnex({
   client: "mysql2",
   connection: {
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
     host: process.env.DB_HOST,
-    user: "root",
-    password: process.env.MYSQL_ROOT_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
+    database: process.env.DB_NAME,
     pool: {
       min: 1,
       max: 1,

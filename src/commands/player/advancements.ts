@@ -1,14 +1,14 @@
-import advancements from "assets/advancements.json";
 import pterodactyl from "@/modules/api";
 import ServerModel from "@/modules/db/models/server";
 import UserModel from "@/modules/db/models/user";
-import { defaultEmbed } from "@/modules/utils/functions";
-import logger from "@/modules/utils/logger";
 import {
-  EmbedBuilder,
-  SlashCommandSubcommandBuilder,
-  codeBlock,
-} from "discord.js";
+  defaultEmbed,
+  getAllAdvancements,
+  getPageFooter,
+} from "@/modules/utils/functions";
+import logger from "@/modules/utils/logger";
+import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
+import { SlashCommandSubcommandBuilder, codeBlock } from "discord.js";
 import _ from "lodash";
 import MiniSearch, { SearchResult } from "minisearch";
 import { table } from "table";
@@ -20,6 +20,8 @@ const minisearch = new MiniSearch<Advancement>({
     fuzzy: 0.5,
   },
 });
+
+const advancements = getAllAdvancements();
 
 minisearch.addAll(advancements);
 
@@ -62,26 +64,42 @@ const advancementsCommand: BotSubcommand = {
 
       const headerRow = ["Criteria", "Timestamp"];
       const bodyRows = _.entries(advProgress.criteria).map(([k, v]) => [
-        k.replace("minecraft:", ""),
+        _.startCase(k.replace("minecraft:", "")),
         new Date(v!).toUTCString(),
       ]);
 
-      const titleEmbed = defaultEmbed().addFields(
-        { name: "Category", value: advancement.category, inline: true },
-        { name: "Completed", value: String(advProgress.done), inline: true },
-        { name: "Title", value: advancement.title },
-        { name: "Description", value: advancement.description }
+      const paginatedEmbed = new PaginatedEmbedMessage(
+        {
+          content: bodyRows,
+          builder(items, meta) {
+            const tableStr = codeBlock(
+              table([headerRow, ...items], {
+                columnDefault: { wrapWord: true, width: 27 },
+              })
+            );
+            const embed = defaultEmbed()
+              .setDescription(tableStr)
+              .addFields(
+                { name: "Category", value: advancement.category, inline: true },
+                {
+                  name: "Completed",
+                  value: String(advProgress.done),
+                  inline: true,
+                },
+                { name: "Title", value: advancement.title },
+                { name: "Description", value: advancement.description }
+              )
+              .setFooter({ text: getPageFooter(meta) });
+
+            return {
+              embeds: [embed],
+            };
+          },
+        },
+        { pageSize: 20 }
       );
 
-      // Handle discord message limit of 4096 chars
-      const embeds: EmbedBuilder[] = [];
-      while (bodyRows.length > 0) {
-        const batch = bodyRows.splice(0, 35);
-        const tableStr = codeBlock(table([headerRow, ...batch]));
-        embeds.push(defaultEmbed().setDescription(tableStr));
-      }
-
-      await interaction.editReply({ embeds: [titleEmbed, ...embeds] });
+      await paginatedEmbed.sendMessage(interaction);
     } catch (error) {
       logger.error(error);
     }

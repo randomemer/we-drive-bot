@@ -16,5 +16,5 @@ module.exports = function (grunt) {
   // grunt.loadNpmTasks("grunt-contrib-copy");
   grunt.loadNpmTasks("grunt-exec");
 
-  grunt.registerTask("build", ["exec:tsc", "copy:assets", "exec:tsc_alias"]);
+  grunt.registerTask("build", ["exec:tsc", "exec:tsc_alias"]);
 };
