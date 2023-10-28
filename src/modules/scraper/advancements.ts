@@ -51,7 +51,13 @@ async function fetchAdvancements() {
   });
 
   const data = JSON.stringify(advancements);
-  const outPath = path.join(process.cwd(), "assets", "advancements.json");
+  const pkgDir = process.env.NODE_ENV === "prod" ? "dist" : "src";
+  const outPath = path.join(
+    process.cwd(),
+    pkgDir,
+    "assets",
+    "advancements.json"
+  );
 
   await fs.writeFile(outPath, data);
 }

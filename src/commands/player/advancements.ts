@@ -1,11 +1,8 @@
+import advancements from "@/assets/advancements.json";
 import pterodactyl from "@/modules/api";
 import ServerModel from "@/modules/db/models/server";
 import UserModel from "@/modules/db/models/user";
-import {
-  defaultEmbed,
-  getAllAdvancements,
-  getPageFooter,
-} from "@/modules/utils/functions";
+import { defaultEmbed, getPageFooter } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
 import { SlashCommandSubcommandBuilder, codeBlock } from "discord.js";
@@ -20,8 +17,6 @@ const minisearch = new MiniSearch<Advancement>({
     fuzzy: 0.5,
   },
 });
-
-const advancements = getAllAdvancements();
 
 minisearch.addAll(advancements);
 

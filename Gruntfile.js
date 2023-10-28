@@ -11,10 +11,18 @@ module.exports = function (grunt) {
         cmd: "yarn tsc-alias",
       },
     },
+    copy: {
+      assets: {
+        expand: true,
+        cwd: "src/assets/",
+        src: ["**/*"],
+        dest: "dist/assets/",
+      },
+    },
   });
 
-  // grunt.loadNpmTasks("grunt-contrib-copy");
+  grunt.loadNpmTasks("grunt-contrib-copy");
   grunt.loadNpmTasks("grunt-exec");
 
-  grunt.registerTask("build", ["exec:tsc", "exec:tsc_alias"]);
+  grunt.registerTask("build", ["exec:tsc", "exec:tsc_alias", "copy:assets"]);
 };
