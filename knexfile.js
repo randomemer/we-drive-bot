@@ -31,7 +31,10 @@ module.exports = {
       max: 10,
     },
     migrations: {
-      tableName: "knex_migrations",
+      directory: "./knex/migrations",
+    },
+    seeds: {
+      directory: "./knex/seeds",
     },
   },
 };
