@@ -51,12 +51,7 @@ async function fetchAdvancements() {
   });
 
   const data = JSON.stringify(advancements);
-  const outPath = path.join(
-    process.cwd(),
-    "src",
-    "assets",
-    "advancements.json"
-  );
+  const outPath = path.join(process.cwd(), "assets", "advancements.json");
 
   await fs.writeFile(outPath, data);
 }

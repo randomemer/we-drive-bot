@@ -5,10 +5,12 @@ WORKDIR /app
 
 COPY . .
 
-RUN ["yarn", "install"]
+RUN yarn install
 
-RUN ["yarn", "knex", "migrate:latest"]
+RUN yarn knex migrate:latest
 
-RUN ["yarn", "prestart"]
+RUN yarn build
+
+RUN yarn prestart
 
 CMD [ "yarn", "start" ]

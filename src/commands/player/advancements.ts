@@ -1,4 +1,4 @@
-import advancements from "@/assets/advancements.json";
+import advancements from "assets/advancements.json";
 import pterodactyl from "@/modules/api";
 import ServerModel from "@/modules/db/models/server";
 import UserModel from "@/modules/db/models/user";

@@ -12,4 +12,6 @@ COPY . .
 
 RUN chmod +x ./docker/setup.sh
 
+RUN
+
 CMD [ "/bin/bash", "/opt/wait-for-it/wait-for-it.sh", "-t", "60", "db:3306", "--", "./docker/setup.sh" ]
