@@ -1,4 +1,5 @@
 import pterodactyl from "@/modules/api";
+import sendErrorMessage from "@/modules/utils/errors";
 import * as utils from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
@@ -41,6 +42,7 @@ const command: BotSubcommand = {
 
       await paginator.sendMessage(interaction);
     } catch (error) {
+      await sendErrorMessage(error as Error, interaction);
       logger.error(error);
     }
   },

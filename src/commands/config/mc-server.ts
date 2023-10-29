@@ -1,5 +1,6 @@
 import pterodactyl from "@/modules/api";
 import ServerModel from "@/modules/db/models/server";
+import sendErrorMessage from "@/modules/utils/errors";
 import logger from "@/modules/utils/logger";
 import {
   ActionRowBuilder,
@@ -71,6 +72,7 @@ const mcServerCommand: BotSubcommand = {
         reply.edit({ components: [] });
       });
     } catch (error) {
+      await sendErrorMessage(error as Error, interaction);
       logger.error(error);
     }
   },

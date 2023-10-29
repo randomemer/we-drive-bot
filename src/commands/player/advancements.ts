@@ -2,9 +2,11 @@ import advancements from "@/assets/advancements.json";
 import pterodactyl from "@/modules/api";
 import ServerModel from "@/modules/db/models/server";
 import UserModel from "@/modules/db/models/user";
+import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed, getPageFooter } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
+import dayjs from "dayjs";
 import { SlashCommandSubcommandBuilder, codeBlock } from "discord.js";
 import _ from "lodash";
 import MiniSearch, { SearchResult } from "minisearch";
@@ -60,7 +62,7 @@ const advancementsCommand: BotSubcommand = {
       const headerRow = ["Criteria", "Timestamp"];
       const bodyRows = _.entries(advProgress.criteria).map(([k, v]) => [
         _.startCase(k.replace("minecraft:", "")),
-        new Date(v!).toUTCString(),
+        dayjs(v).format("DD/MM/YYYY h:mm A z"),
       ]);
 
       const paginatedEmbed = new PaginatedEmbedMessage(
@@ -96,6 +98,7 @@ const advancementsCommand: BotSubcommand = {
 
       await paginatedEmbed.sendMessage(interaction);
     } catch (error) {
+      await sendErrorMessage(error as Error, interaction);
       logger.error(error);
     }
   },
@@ -113,6 +116,7 @@ const advancementsCommand: BotSubcommand = {
         .slice(0, 25);
       await interaction.respond(choices);
     } catch (error) {
+      await sendErrorMessage(error as Error, interaction);
       logger.error(error);
     }
   },

@@ -1,4 +1,5 @@
 import ServerModel from "@/modules/db/models/server";
+import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import {
@@ -42,6 +43,7 @@ const mcChannelCommand: BotSubcommand = {
 
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
+      await sendErrorMessage(error as Error, interaction);
       logger.error(error);
     }
   },

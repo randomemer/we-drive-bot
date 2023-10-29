@@ -34,23 +34,19 @@ export default class WeDriveClient extends Client {
       process.env.BOT_TOKEN as string
     );
 
-    try {
-      logger.info(`Deploying ${commands.length} application (/) commands`);
+    logger.info(`Deploying ${commands.length} application (/) commands`);
 
-      await rest.put(
-        Routes.applicationGuildCommands(
-          process.env.BOT_APP_ID!,
-          "1165331231337103370"
-        ),
-        { body: commands }
-      );
+    await rest.put(
+      Routes.applicationGuildCommands(
+        process.env.BOT_APP_ID!,
+        "1165331231337103370"
+      ),
+      { body: commands }
+    );
 
-      logger.info(
-        `Sucessfully deployed ${commands.length} application (/) commands\n`
-      );
-    } catch (error) {
-      logger.error(error);
-    }
+    logger.info(
+      `Sucessfully deployed ${commands.length} application (/) commands\n`
+    );
   }
 
   async registerEventListeners(): Promise<void> {
@@ -64,5 +60,7 @@ export default class WeDriveClient extends Client {
 
       this.on(listener.name, listener.listener);
     }
+
+    logger.info(`Registered ${files.length} event listeners`);
   }
 }

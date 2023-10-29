@@ -113,6 +113,7 @@ export default class PaginatedEmbedMessage<T> {
     const collector = this.message!.createMessageComponentCollector({
       time: 60 * 1_000,
       componentType: ComponentType.Button,
+      filter: (i) => i.user.id === interaction.user.id,
     });
 
     collector.on("collect", async (action) => {

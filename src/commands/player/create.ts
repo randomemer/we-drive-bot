@@ -1,5 +1,6 @@
 import UserModel from "@/modules/db/models/user";
 import { UUID_TOOL_API } from "@/modules/utils/constants";
+import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import axios from "axios";
@@ -55,6 +56,7 @@ const createCommand: BotSubcommand = {
         ]);
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
+      await sendErrorMessage(error as Error, interaction);
       logger.error(error);
     }
   },

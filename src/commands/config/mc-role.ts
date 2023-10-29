@@ -1,10 +1,11 @@
 import ServerModel from "@/modules/db/models/server";
+import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import {
   SlashCommandRoleOption,
   SlashCommandSubcommandBuilder,
-  roleMention
+  roleMention,
 } from "discord.js";
 
 const mcRoleCommand: BotSubcommand = {
@@ -49,6 +50,7 @@ const mcRoleCommand: BotSubcommand = {
         );
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
+      await sendErrorMessage(error as Error, interaction);
       logger.error(error);
     }
   },

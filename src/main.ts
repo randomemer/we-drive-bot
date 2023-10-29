@@ -1,9 +1,18 @@
+import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import dotenv from "dotenv";
 import WeDriveClient from "./bot";
 import ServerSocketManager from "./modules/api/socket";
 import "./modules/db";
 import { knex } from "./modules/db";
 import logger from "./modules/utils/logger";
+import { PROCESS_STOP_SIGNALS } from "./modules/utils/constants";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advancedFormat);
 
 dotenv.config({ path: `env/.env.${process.env.NODE_ENV}` });
 
@@ -19,9 +28,9 @@ async function main() {
 
     // Register events
     await client.registerEventListeners();
-    logger.info("Registered event listeners");
   } catch (error) {
     logger.error(error, "Failed to initialize client");
+    throw error;
   }
 }
 
@@ -40,16 +49,16 @@ async function shutdown() {
   await client.destroy();
 }
 
-process.on("SIGINT", async () => {
-  logger.info("Received SIGINT. Shutting down gracefully");
-  await shutdown();
-  process.exit(0);
+PROCESS_STOP_SIGNALS.forEach((signal) => {
+  process.on(signal, async () => {
+    logger.info(`Received ${signal}. Shutting down gracefully`);
+    await shutdown();
+    process.exit(0);
+  });
 });
 
-process.on("SIGTERM", async () => {
-  logger.info("Received SIGTERM. Shutting down gracefully");
-  await shutdown();
-  process.exit(0);
+process.on("unhandledRejection", (error) => {
+  logger.error(error);
 });
 
 export default client;

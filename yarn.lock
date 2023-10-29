@@ -858,6 +858,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dayjs@npm:^1.11.10":
+  version: 1.11.10
+  resolution: "dayjs@npm:1.11.10"
+  checksum: a6b5a3813b8884f5cd557e2e6b7fa569f4c5d0c97aca9558e38534af4f2d60daafd3ff8c2000fed3435cfcec9e805bcebd99f90130c6d1c5ef524084ced588c4
+  languageName: node
+  linkType: hard
+
 "db-errors@npm:^0.2.3":
   version: 0.2.3
   resolution: "db-errors@npm:0.2.3"
@@ -3693,6 +3700,7 @@ __metadata:
     "@types/node": ^20.8.7
     "@types/ws": ^8.5.8
     axios: ^1.5.1
+    dayjs: ^1.11.10
     discord.js: ^14.13.0
     dotenv: ^16.3.1
     grunt: ^1.6.1
