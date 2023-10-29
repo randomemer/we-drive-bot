@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+
+dotenv.config({ path: `.env.${NODE_ENV}` });
+
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
  */

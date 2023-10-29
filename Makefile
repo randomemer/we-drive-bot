@@ -1,7 +1,7 @@
 yml := docker-compose.yml
 env ?= dev
 
-.PHONY: start stop up down clean bot-sh db-sh logs
+.PHONY: start stop up down clean bot-sh db-sh logs build
 
 start:
 	docker compose --env-file env/.env.$(env) -f $(yml) start
@@ -23,7 +23,7 @@ bot-sh:
 	docker compose --env-file env/.env.$(env) -f $(yml) exec bot /bin/bash
 
 db-sh:
-	docker compose --env-file env/.env.$(env) -f $(yml) exec db bash -c 'mysql -u$$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE'
+	docker compose --env-file env/.env.$(env) -f $(yml) exec db bash -c 'mysql -u$$DB_USER -p$$DB_PASSWORD $$DB_NAME'
 
 logs:
 	docker compose --env-file env/.env.$(env) -f $(yml) logs --tail=100

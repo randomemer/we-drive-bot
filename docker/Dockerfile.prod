@@ -1,10 +1,17 @@
 FROM node:18-alpine
 
 WORKDIR /app
+
 COPY . .
+
+RUN source ./env/.env.prod
+
+RUN echo ${NODE_ENV}
+RUN echo ${DB_HOST}
+
 RUN yarn install
 RUN yarn build
-RUN yarn knex migrate:latest --env prod
+# RUN yarn knex migrate:latest --env prod
 RUN yarn prestart
 
 CMD [ "yarn", "start" ]

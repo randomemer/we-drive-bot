@@ -2,5 +2,5 @@
   "watch": ["src"],
   "ext": "ts,json",
   "signal": "SIGINT",
-  "exec": "yarn dev | pino-pretty"
+  "exec": "yarn dev | pino-pretty -c"
 }
