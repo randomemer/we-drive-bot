@@ -1,6 +1,6 @@
 const dotenv = require("dotenv");
 
-dotenv.config({ path: `.env.${NODE_ENV}` });
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
