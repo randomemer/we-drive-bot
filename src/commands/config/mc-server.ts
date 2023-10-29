@@ -1,9 +1,11 @@
 import pterodactyl from "@/modules/api";
+import ServerSocketManager from "@/modules/api/socket";
 import ServerModel from "@/modules/db/models/server";
 import sendErrorMessage from "@/modules/utils/errors";
 import logger from "@/modules/utils/logger";
 import {
   ActionRowBuilder,
+  Client,
   Colors,
   ComponentType,
   SlashCommandSubcommandBuilder,
@@ -66,6 +68,8 @@ const mcServerCommand: BotSubcommand = {
         });
 
         await int.update({ embeds: [editedEmbed], components: [] });
+
+        await updateServerSocket(interaction.client, interaction.guildId!);
       });
 
       collector.on("end", () => {
@@ -77,5 +81,14 @@ const mcServerCommand: BotSubcommand = {
     }
   },
 };
+
+async function updateServerSocket(client: Client, guildId: string) {
+  const server = await ServerModel.query().findById(guildId);
+
+  const manager = ServerSocketManager.managers.get(server!.id);
+  if (manager) manager.close();
+
+  new ServerSocketManager(client, server!);
+}
 
 export default mcServerCommand;

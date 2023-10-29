@@ -9,3 +9,5 @@ export const BOT_SCOPES = ["bot", "applications.commands"];
 export const ADVANCEMENTS_URL = `https://minecraft.fandom.com/wiki/Advancement`;
 
 export const PROCESS_STOP_SIGNALS = ["SIGINT", "SIGHUP", "SIGTERM"] as const;
+
+export const MAIN_GUILD_ID = "1165331231337103370";

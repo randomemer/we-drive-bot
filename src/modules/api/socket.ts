@@ -19,26 +19,18 @@ export default class ServerSocketManager {
     const servers = await ServerModel.query().whereNotNull("mc_server");
 
     for (const server of servers) {
-      const manager = new ServerSocketManager(client, server);
-      this.managers.set(server.id, manager);
+      new ServerSocketManager(client, server);
     }
 
     logger.info(`Created ${servers.length} pterodactyl sockets`);
   }
 
   static closeWebsockets() {
-    this.managers.forEach((manager) => {
-      manager.socket.removeAllListeners();
+    this.managers.forEach((manager) => manager.close());
+  }
 
-      if (
-        manager.socket.readyState === WebSocket.CLOSING ||
-        manager.socket.readyState === WebSocket.CLOSED
-      ) {
-        return;
-      }
-
-      manager.socket.terminate();
-    });
+  static terminateWebsockets() {
+    this.managers.forEach((manager) => manager.terminate());
   }
 
   client: Client;
@@ -54,7 +46,7 @@ export default class ServerSocketManager {
     this.initSocket();
   }
 
-  async initSocket() {
+  private async initSocket() {
     try {
       const resp = await pterodactyl.get<SocketDetailsResp>(
         `/servers/${this.server.mc_server}/websocket`
@@ -64,6 +56,8 @@ export default class ServerSocketManager {
       this.socket = new WebSocket(resp.data.data.socket, {
         origin: "https://control.sparkedhost.us",
       });
+
+      ServerSocketManager.managers.set(this.server.id, this);
 
       // Hook up event listener
       this.socket.on("open", this.onOpen.bind(this));
@@ -218,5 +212,22 @@ export default class ServerSocketManager {
     logger.info(
       `Socket auth expired (${this.server.mc_server},${this.server.id})`
     );
+  }
+
+  close() {
+    if (
+      this.socket.readyState === WebSocket.CLOSED ||
+      this.socket.readyState === WebSocket.CLOSING
+    )
+      return;
+    this.socket.removeAllListeners();
+    this.socket.close();
+    ServerSocketManager.managers.delete(this.server.id);
+  }
+
+  terminate() {
+    this.socket.removeAllListeners();
+    this.socket.terminate();
+    ServerSocketManager.managers.delete(this.server.id);
   }
 }

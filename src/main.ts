@@ -40,7 +40,7 @@ main();
 
 async function shutdown() {
   // 1. Terminate sockets
-  ServerSocketManager.closeWebsockets();
+  ServerSocketManager.terminateWebsockets();
 
   // 2. Close database connections
   await knex.destroy();
