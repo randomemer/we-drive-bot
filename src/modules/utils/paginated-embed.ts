@@ -62,7 +62,7 @@ export default class PaginatedEmbedMessage<T> {
     data: PaginatedEmbedMessageData<T>,
     options?: Partial<PaginatedEmbedMessageOptions>
   ) {
-    if (options !== undefined) {
+    if (!options) {
       this.options = _.defaults(this.options, {
         pageSize: 10,
         btnTimeout: 60_000,

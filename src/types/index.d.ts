@@ -37,7 +37,9 @@ declare global {
   };
 
   interface BotCommandRootExecutable
-    extends BotCommandExecutable<SlashCommandBuilder> {}
+    extends BotCommandExecutable<
+      Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
+    > {}
 
   interface BotCommandRootNonExecutable extends ICommand<SlashCommandBuilder> {
     subCommands?: Map<string, BotSubcommand>;

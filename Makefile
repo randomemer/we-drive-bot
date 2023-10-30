@@ -5,7 +5,7 @@ env ?= dev
 
 start:
 	docker compose --env-file env/.env.$(env) -f $(yml) start
-	docker compose --env-file env/.env.$(env) logs -f
+	docker compose --env-file env/.env.$(env) logs -f --tail=100
 
 stop:
 	docker compose --env-file env/.env.$(env) -f $(yml) stop
