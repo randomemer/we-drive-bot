@@ -29,7 +29,12 @@ declare global {
     autocomplete?(interaction: AutocompleteInteraction): Promise<void>;
   }
 
-  type BotCommandRoot = BotCommandRootExecutable | BotCommandRootNonExecutable;
+  type BotCommandRoot = (
+    | BotCommandRootExecutable
+    | BotCommandRootNonExecutable
+  ) & {
+    dev?: Boolean;
+  };
 
   interface BotCommandRootExecutable
     extends BotCommandExecutable<SlashCommandBuilder> {}
@@ -82,6 +87,8 @@ declare global {
 
   interface PlayerAdvancements
     extends Partial<Record<string, AdvancementProgress>> {}
+
+  type ServerPowerState = "start" | "stop" | "restart" | "kill";
 }
 
 declare module "discord.js" {

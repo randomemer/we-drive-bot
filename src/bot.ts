@@ -9,7 +9,7 @@ import {
 import fs from "node:fs";
 import path from "node:path";
 import logger from "./modules/utils/logger";
-import { MAIN_GUILD_ID } from "./modules/utils/constants";
+import { DEV_GUILD_ID } from "./modules/utils/constants";
 
 export default class WeDriveClient extends Client {
   slashCommands = new Map<string, BotCommandRoot>();
@@ -27,18 +27,15 @@ export default class WeDriveClient extends Client {
       const command: BotCommandRoot = require(commandPath).default;
 
       commands.push(command.data.toJSON());
-
       this.slashCommands.set(command.data.name, command);
     }
 
-    const rest = new REST({ version: "10" }).setToken(
-      process.env.BOT_TOKEN as string
-    );
+    const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN!);
 
     logger.info(`Deploying ${commands.length} application (/) commands`);
 
     await rest.put(
-      Routes.applicationGuildCommands(process.env.BOT_APP_ID!, MAIN_GUILD_ID),
+      Routes.applicationGuildCommands(process.env.BOT_APP_ID!, DEV_GUILD_ID),
       { body: commands }
     );
 

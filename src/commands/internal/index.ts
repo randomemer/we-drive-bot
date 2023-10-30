@@ -1,14 +1,15 @@
 import { registerSubcommands } from "@/modules/utils/functions";
 import { SlashCommandBuilder } from "discord.js";
-import powerCommand from "./power";
+import reloadCommand from "./reload";
 
 const builder = new SlashCommandBuilder()
-  .setName("server")
-  .setDescription("Server management commands");
+  .setName("internal")
+  .setDescription("Internal commands only for devs");
 
 const command: BotCommandRoot = {
   data: builder,
-  subCommands: registerSubcommands(builder, [powerCommand]),
+  dev: true,
+  subCommands: registerSubcommands(builder, [reloadCommand]),
 };
 
 export default command;

@@ -7,8 +7,8 @@ import WeDriveClient from "./bot";
 import ServerSocketManager from "./modules/api/socket";
 import "./modules/db";
 import { knex } from "./modules/db";
-import logger from "./modules/utils/logger";
 import { PROCESS_STOP_SIGNALS } from "./modules/utils/constants";
+import logger from "./modules/utils/logger";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

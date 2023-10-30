@@ -6,12 +6,12 @@ const config: ListenerConfig<"guildDelete"> = {
   name: "guildDelete",
   async listener(guild) {
     try {
+      // Delete the record in db
       await ServerModel.query().deleteById(guild.id);
 
+      // Close the server's socket
       const manager = ServerSocketManager.managers.get(guild.id);
-      if (manager) {
-        manager.close();
-      }
+      if (manager) manager.close();
     } catch (error) {
       logger.error(error);
     }

@@ -80,12 +80,7 @@ export default class ServerSocketManager {
   // Socket event handlers
 
   private async onOpen() {
-    const data = {
-      event: "auth",
-      args: [this.token],
-    };
-
-    this.socket.send(JSON.stringify(data));
+    this.sendAuth(this.token);
   }
 
   private async onMessage(event: RawData, isBinary: Boolean) {
@@ -199,12 +194,8 @@ export default class ServerSocketManager {
     const resp = await pterodactyl.get<SocketDetailsResp>(
       `/servers/${this.server.mc_server}/websocket`
     );
-
-    const data = {
-      event: "auth",
-      args: [resp.data.data.token],
-    };
-    this.socket.send(JSON.stringify(data));
+    this.token = resp.data.data.token;
+    this.sendAuth(this.token);
   }
 
   private async onTokenExpired() {
@@ -212,6 +203,24 @@ export default class ServerSocketManager {
     logger.info(
       `Socket auth expired (${this.server.mc_server},${this.server.id})`
     );
+  }
+
+  // Socket Commands
+
+  sendAuth(token: string) {
+    const data = {
+      event: "auth",
+      args: [token],
+    };
+    this.socket.send(JSON.stringify(data));
+  }
+
+  sendPowerState(state: any) {
+    const data = {
+      event: "set state",
+      args: [state],
+    };
+    this.socket.send(JSON.stringify(data));
   }
 
   close() {

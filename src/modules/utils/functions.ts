@@ -3,11 +3,13 @@ import {
   ChatInputCommandInteraction,
   Colors,
   EmbedBuilder,
+  PermissionsBitField,
   SlashCommandBuilder,
   SlashCommandSubcommandGroupBuilder,
 } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
+import { BOT_PERMS, BOT_SCOPES, OAUTH_URL } from "./constants";
 
 export function getPageFooter(meta: BuilderFunctionMetadata) {
   return `Showing ${meta.curPage * meta.pageSize + 1} - ${
