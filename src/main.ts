@@ -3,6 +3,7 @@ import advancedFormat from "dayjs/plugin/advancedFormat";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import dotenv from "dotenv";
+import duration from "dayjs/plugin/duration";
 import WeDriveClient from "./bot";
 import ServerSocketManager from "./modules/api/socket";
 import "./modules/db";
@@ -13,6 +14,7 @@ import logger from "./modules/utils/logger";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(advancedFormat);
+dayjs.extend(duration);
 
 dotenv.config({ path: `env/.env.${process.env.NODE_ENV}` });
 

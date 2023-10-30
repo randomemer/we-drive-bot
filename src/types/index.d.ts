@@ -96,9 +96,10 @@ declare module "discord.js" {
     // vars
     slashCommands: Map<string, BotCommandRoot>;
 
-    // function
+    // functions
     registerEventListeners(): Promise<void>;
     registerSlashCommands(): Promise<void>;
+    // reloadCommands(): Promise<void>;
   }
 }
 

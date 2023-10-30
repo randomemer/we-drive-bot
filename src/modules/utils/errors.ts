@@ -1,5 +1,6 @@
 import { Interaction } from "discord.js";
 import logger from "./logger";
+import { defaultEmbed } from "./functions";
 
 export class BotError extends Error {
   title: string;
@@ -15,15 +16,15 @@ export default async function sendErrorMessage(
     if (!interaction.isRepliable()) return;
     if (interaction.replied) return;
 
+    const embed = defaultEmbed();
+
     if (!interaction.deferred) {
-      await interaction.reply({
-        embeds: [{ title: "❌ Error", description: error.message }],
-      });
+      embed.setTitle("❌ Error").setDescription(error.message);
     } else {
-      await interaction.editReply({
-        embeds: [{ title: "❌ Error", description: error.message }],
-      });
+      embed.setTitle("❌ Error").setDescription(error.message);
     }
+
+    await interaction.editReply({ embeds: [embed] });
   } catch (err) {
     logger.error(err, `Failed to send error message`);
   }

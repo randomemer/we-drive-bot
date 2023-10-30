@@ -337,6 +337,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node-os-utils@npm:^1.3.3":
+  version: 1.3.3
+  resolution: "@types/node-os-utils@npm:1.3.3"
+  checksum: ce6ffd7a44e089b4fff40b26c7e0824a6b4f15d43f8db6aacb2f75b6ca6a9db35c6d73332d204ede883308ee725912e2a692a4baf385b1f3d1f8449622786018
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*, @types/node@npm:^20.8.7":
   version: 20.8.7
   resolution: "@types/node@npm:20.8.7"
@@ -2500,6 +2507,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-os-utils@npm:^1.3.7":
+  version: 1.3.7
+  resolution: "node-os-utils@npm:1.3.7"
+  checksum: 4059d74def168e2ffcd28e879731fd68f6e9b1e623804224e34bf0ca3c8968070e9e2cbc0cb57d80dd05d27552495a65c865b93ae5f54e61389e5af0b92ee818
+  languageName: node
+  linkType: hard
+
 "nodemon@npm:^3.0.1":
   version: 3.0.1
   resolution: "nodemon@npm:3.0.1"
@@ -3698,6 +3712,7 @@ __metadata:
     "@types/jsdom": ^21.1.4
     "@types/lodash": ^4.14.200
     "@types/node": ^20.8.7
+    "@types/node-os-utils": ^1.3.3
     "@types/ws": ^8.5.8
     axios: ^1.5.1
     dayjs: ^1.11.10
@@ -3712,6 +3727,7 @@ __metadata:
     lodash: ^4.17.21
     minisearch: ^6.2.0
     mysql2: ^3.6.2
+    node-os-utils: ^1.3.7
     nodemon: ^3.0.1
     objection: ^3.1.2
     pino: ^8.16.0
