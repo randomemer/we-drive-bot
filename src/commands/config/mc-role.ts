@@ -19,8 +19,9 @@ export default new SubCommand({
         .setDescription("A mentionable role for minecraft players")
         .setRequired(true)
     ),
-  async callback(interaction) {
+  async callback(interaction, ctx) {
     try {
+      const server = ctx.get("server") as ServerModel;
       const role = interaction.options.getRole("role", true);
 
       const embed = defaultEmbed();
@@ -38,9 +39,7 @@ export default new SubCommand({
       }
 
       // Change the server's config
-      await ServerModel.query()
-        .where("id", interaction.guildId)
-        .patch({ mc_role: role.id });
+      await server.$query().patch({ mc_role: role.id });
 
       embed
         .setTitle("✅ Minecraft role configured")

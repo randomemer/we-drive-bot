@@ -4,7 +4,6 @@ import { UUID_TOOL_API } from "@/modules/utils/constants";
 import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
-import { CommandType } from "@/types";
 import axios from "axios";
 import {
   SlashCommandStringOption,
@@ -23,18 +22,17 @@ export default new SubCommand({
         .setRequired(true)
     ),
 
-  async callback(interaction) {
+  async callback(interaction, ctx) {
     try {
       const username = interaction.options.getString("username", true);
+      const player = ctx.get("player") as UserModel | undefined;
 
-      const exists = await UserModel.query().findById(interaction.user.id);
-
-      if (exists) {
+      if (player) {
         const embed = defaultEmbed()
-          .setTitle(inlineCode("Your profile already exists"))
+          .setTitle(inlineCode("Your profile has already been created"))
           .addFields([
-            { name: "Username", value: inlineCode(exists.mc_name ?? "<nil>") },
-            { name: "UUID", value: inlineCode(exists.mc_uuid ?? "<nil>") },
+            { name: "Username", value: inlineCode(player.mc_name ?? "<nil>") },
+            { name: "UUID", value: inlineCode(player.mc_uuid ?? "<nil>") },
           ]);
         await interaction.editReply({ embeds: [embed] });
         return;

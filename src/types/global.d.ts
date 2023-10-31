@@ -45,14 +45,14 @@ declare global {
 
   type MiddlewareFunc = (
     interaction: Interaction,
-    context: Map,
+    context: Map<any, unknown>,
     next: Function
   ) => Awaitable<void>;
 
   interface ICommandExecutable {
     callback(
       interaction: ChatInputCommandInteraction,
-      context: Map
+      context: Map<any, unknown>
     ): Promise<void>;
     autocomplete?(interaction: AutocompleteInteraction): Promise<void>;
   }

@@ -1,6 +1,6 @@
 import SubCommand from "@/modules/commands/sub-command";
 import ServerModel from "@/modules/db/models/server";
-import sendErrorMessage from "@/modules/utils/errors";
+import sendErrorMessage, { AppError } from "@/modules/utils/errors";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import {
@@ -22,20 +22,20 @@ export default new SubCommand({
         .setRequired(true)
     ),
 
-  async callback(interaction) {
+  async callback(interaction, ctx) {
     try {
+      const server = ctx.get("server") as ServerModel;
       const channel = interaction.options.getChannel("channel", true);
 
       const apiChannel = await interaction.guild?.channels.fetch(channel.id);
-      if (!apiChannel) throw new Error("Unable to configure minecraft channel");
+      if (!apiChannel)
+        throw new AppError(undefined, "Unable to configure minecraft channel");
 
       const perms = apiChannel.permissionsFor(interaction.guild!.members.me!);
       if (!perms.has(PermissionFlagsBits.SendMessages))
-        throw new Error("Incorrect channel permissions");
+        throw new AppError(undefined, "Incorrect channel permissions");
 
-      await ServerModel.query()
-        .where("id", interaction.guildId)
-        .patch({ mc_channel: channel.id });
+      await server.$query().patch({ mc_channel: channel.id });
 
       const embed = defaultEmbed()
         .setTitle(inlineCode("✅ Minecraft Channel Configured"))

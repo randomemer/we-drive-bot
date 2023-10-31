@@ -183,11 +183,11 @@ export default class ServerSocketManager {
   }
 
   private async onStats(message: StatsEvent) {
-    logger.info(message);
+    // logger.info(message);
   }
 
   private async onConsoleOutput(message: ConsoleOutputEvent) {
-    logger.info(message);
+    // logger.info(message);
   }
 
   private async onTokenExpiring() {

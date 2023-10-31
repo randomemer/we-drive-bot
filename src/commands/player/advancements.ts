@@ -3,12 +3,16 @@ import pterodactyl from "@/modules/api";
 import SubCommand from "@/modules/commands/sub-command";
 import ServerModel from "@/modules/db/models/server";
 import UserModel from "@/modules/db/models/user";
-import sendErrorMessage from "@/modules/utils/errors";
+import sendErrorMessage, { AppError } from "@/modules/utils/errors";
 import { defaultEmbed, getPageFooter } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
 import dayjs from "dayjs";
-import { SlashCommandSubcommandBuilder, codeBlock } from "discord.js";
+import {
+  SlashCommandSubcommandBuilder,
+  codeBlock,
+  inlineCode,
+} from "discord.js";
 import _ from "lodash";
 import MiniSearch, { SearchResult } from "minisearch";
 import { table } from "table";
@@ -35,18 +39,58 @@ export default new SubCommand({
         .setAutocomplete(true)
     ),
 
-  async callback(interaction) {
+  middleware: [
+    // 1. Check if user has created profile
+    async function (interaction, ctx, next) {
+      const player = await UserModel.query().findById(interaction.user.id);
+      if (!player)
+        throw new AppError(
+          "Profile Not Found",
+          `"Are you sure you created your profile with ${inlineCode(
+            "/player create"
+          )} command?`
+        );
+
+      ctx.set("player", player);
+
+      next();
+    },
+    // 2. Check if guild has required config
+    async function (interaction, ctx, next) {
+      const server = await ServerModel.query().findById(interaction.guildId!);
+
+      if (!server?.mc_server) {
+        throw new AppError(
+          "Missing Configuration",
+          "There is no minecraft server configured in settings"
+        );
+      }
+
+      ctx.set("server", server);
+      next();
+    },
+  ],
+
+  async callback(interaction, ctx) {
     try {
       const option = interaction.options.get("title", true);
       const tag = `minecraft:${option.value}`;
 
       const server = await ServerModel.query().findById(interaction.guildId!);
       const serverId = server?.mc_server;
-      if (!serverId) throw new Error("Minecraft server has not configured");
+      if (!serverId)
+        throw new AppError(
+          "Missing Configuration",
+          "Minecraft server has not configured"
+        );
 
-      const player = await UserModel.query().findById(interaction.user.id);
+      const player = ctx.get("player") as UserModel | undefined;
       const uuid = player?.mc_uuid;
-      if (!uuid) throw new Error("You have not created your profile");
+      if (!uuid)
+        throw new AppError(
+          "Missing Profile",
+          "You have not created your profile"
+        );
 
       const filePath = `/world/advancements/${uuid}.json`;
       const resp = await pterodactyl.get<PlayerAdvancements>(

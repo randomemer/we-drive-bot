@@ -20,8 +20,9 @@ export default new SubCommand({
     .setName("minecraft_server")
     .setDescription("Set the default server for all server commands"),
 
-  async callback(interaction) {
+  async callback(interaction, ctx) {
     try {
+      const server = ctx.get("server") as ServerModel;
       const resp = await pterodactyl.get<PanelAPIResp<PterodactylServer[]>>(
         "/"
       );
@@ -31,12 +32,13 @@ export default new SubCommand({
         .setPlaceholder("Select a server")
         .addOptions(
           resp.data.data.map(
-            (server) =>
+            (item) =>
               new StringSelectMenuOptionBuilder({
-                label: server.attributes.name,
-                value: server.attributes.identifier,
-                description: server.attributes.description,
+                label: item.attributes.name,
+                value: item.attributes.identifier,
+                description: item.attributes.description,
                 emoji: { name: "🗄" },
+                default: server.mc_server === item.attributes.identifier,
               })
           )
         );
@@ -61,9 +63,8 @@ export default new SubCommand({
 
       collector.on("collect", async (int) => {
         const id = int.values[0];
-        await ServerModel.query()
-          .where("id", int.guildId)
-          .patch({ mc_server: id });
+
+        await server.$query().patch({ mc_server: id });
 
         const editedEmbed = produce(reply.embeds[0].toJSON(), (embed) => {
           embed.description = "✅ Sucessfully changed default server";

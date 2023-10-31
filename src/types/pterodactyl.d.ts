@@ -197,6 +197,30 @@ declare global {
     extends Partial<Record<string, AdvancementProgress>> {}
 
   type ServerPowerState = "start" | "stop" | "restart" | "kill";
+
+  interface MinecraftServerOperator {
+    uuid: string;
+    name: string;
+    level: number;
+    bypassesPlayerLimit: boolean;
+  }
+
+  interface MinecraftOnlinePlayer {
+    uuid: string;
+    name: string;
+    avatarURL: string;
+  }
+
+  interface MinecraftPlayersResp {
+    data: {
+      error: null;
+      online_players: MinecraftOnlinePlayer[];
+      online_player_count: number;
+      max_players: null;
+      bans: any[];
+      operators: MinecraftServerOperator[];
+    };
+  }
 }
 
 export {};

@@ -14,22 +14,27 @@ export class AppError extends Error {
 }
 
 export default async function sendErrorMessage(
-  error: Error,
+  error: unknown,
   interaction: Interaction
 ) {
   try {
     if (!interaction.isRepliable()) return;
-    if (interaction.replied) return;
 
     const embed = defaultEmbed();
 
-    if (!interaction.deferred) {
+    // 1. Build the error message
+    if (error instanceof AppError) {
+      embed.setTitle(`❌ ${error.title}`).setDescription(error.message);
+    } else if (error instanceof Error) {
       embed.setTitle("❌ Error").setDescription(error.message);
-    } else {
-      embed.setTitle("❌ Error").setDescription(error.message);
-    }
+    } else return;
 
-    await interaction.editReply({ embeds: [embed] });
+    // 2. Send the message
+    if (!interaction.deferred) {
+      await interaction.reply({ embeds: [embed] });
+    } else {
+      await interaction.editReply({ embeds: [embed] });
+    }
   } catch (err) {
     logger.error(err, `Failed to send error message`);
   }

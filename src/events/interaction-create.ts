@@ -1,3 +1,4 @@
+import sendErrorMessage from "@/modules/utils/errors";
 import { getCmdMiddlewares, getExecutableCmd } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import {
@@ -18,28 +19,33 @@ const config: ListenerConfig<"interactionCreate"> = {
 async function handleChatInput(
   interaction: ChatInputCommandInteraction<CacheType>
 ) {
-  await interaction.deferReply();
-  const cmd = getExecutableCmd(interaction);
+  try {
+    await interaction.deferReply();
+    const cmd = getExecutableCmd(interaction);
 
-  if (!cmd) {
-    await interaction.editReply("No such bot command found");
-    return;
+    if (!cmd) {
+      await interaction.editReply("No such bot command found");
+      return;
+    }
+
+    const context = new Map();
+
+    const chain = getCmdMiddlewares(cmd);
+
+    let isBroken = true;
+    for (let i = 0; i < chain.length; i++) {
+      const middleware = chain[i];
+
+      isBroken = true;
+      await middleware(interaction, context, () => (isBroken = false));
+      if (isBroken) return;
+    }
+
+    await cmd.callback(interaction, context);
+  } catch (error) {
+    await sendErrorMessage(error as Error, interaction);
+    logger.error(error);
   }
-
-  const context = new Map();
-
-  const chain = getCmdMiddlewares(cmd);
-
-  let isBroken = true;
-  for (let i = 0; i < chain.length; i++) {
-    const middleware = chain[i];
-
-    isBroken = true;
-    await middleware(interaction, context, () => (isBroken = false));
-    if (isBroken) return;
-  }
-
-  await cmd.callback(interaction, context);
 }
 
 async function handleAutocomplete(interaction: AutocompleteInteraction) {
