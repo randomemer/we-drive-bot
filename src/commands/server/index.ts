@@ -1,14 +1,10 @@
-import { registerSubcommands } from "@/modules/utils/functions";
+import { RootCommandNonExecutable } from "@/modules/commands/root-command";
 import { SlashCommandBuilder } from "discord.js";
 import powerCommand from "./power";
-import { CommandType } from "@/types";
 
-const builder = new SlashCommandBuilder()
-  .setName("server")
-  .setDescription("Server management commands");
-
-export default {
-  type: CommandType.Root,
-  data: builder,
-  subCommands: registerSubcommands(builder, [powerCommand]),
-} satisfies RootCommand;
+export default new RootCommandNonExecutable({
+  data: new SlashCommandBuilder()
+    .setName("server")
+    .setDescription("Server management commands"),
+  subcommands: [powerCommand],
+});

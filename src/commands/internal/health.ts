@@ -1,16 +1,16 @@
+import SubCommand from "@/modules/commands/sub-command";
 import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
-import { CommandType } from "@/types";
 import dayjs from "dayjs";
 import { SlashCommandSubcommandBuilder } from "discord.js";
 import osutils from "node-os-utils";
 
-export default {
-  type: CommandType.SubCmd,
+export default new SubCommand({
   data: new SlashCommandSubcommandBuilder()
     .setName("health")
     .setDescription("Get info about the bot's health"),
+
   async callback(interaction) {
     try {
       //@ts-ignore
@@ -58,4 +58,4 @@ export default {
       logger.error(error);
     }
   },
-} satisfies Subcommand;
+});

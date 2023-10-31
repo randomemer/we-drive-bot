@@ -2,10 +2,15 @@ import { Interaction } from "discord.js";
 import logger from "./logger";
 import { defaultEmbed } from "./functions";
 
-export class BotError extends Error {
+export class AppError extends Error {
   title: string;
 
-  // constructor()
+  constructor(title?: string, message?: string, options?: ErrorOptions) {
+    message = message ?? "Something went wrong";
+    super(message, options);
+    this.name = "AppError";
+    this.title = title ?? "Application Error";
+  }
 }
 
 export default async function sendErrorMessage(

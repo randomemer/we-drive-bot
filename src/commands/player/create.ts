@@ -1,3 +1,4 @@
+import SubCommand from "@/modules/commands/sub-command";
 import UserModel from "@/modules/db/models/user";
 import { UUID_TOOL_API } from "@/modules/utils/constants";
 import sendErrorMessage from "@/modules/utils/errors";
@@ -11,8 +12,7 @@ import {
   inlineCode,
 } from "discord.js";
 
-export default {
-  type: CommandType.SubCmd,
+export default new SubCommand({
   data: new SlashCommandSubcommandBuilder()
     .setName("create")
     .setDescription("Get started by creating a profile with a the bot")
@@ -22,6 +22,7 @@ export default {
         .setDescription("Your minecraft username")
         .setRequired(true)
     ),
+
   async callback(interaction) {
     try {
       const username = interaction.options.getString("username", true);
@@ -62,4 +63,4 @@ export default {
       logger.error(error);
     }
   },
-} satisfies Subcommand;
+});

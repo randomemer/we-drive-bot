@@ -1,10 +1,9 @@
-import { CommandType } from "@/types";
+import SubCommand from "@/modules/commands/sub-command";
 import { SlashCommandSubcommandBuilder } from "discord.js";
 
-export default {
-  type: CommandType.SubCmd,
+export default new SubCommand({
   data: new SlashCommandSubcommandBuilder()
     .setName("reload")
     .setDescription("Reload all slash commands or a specific one"),
   async callback(interaction) {},
-} satisfies Subcommand;
+});

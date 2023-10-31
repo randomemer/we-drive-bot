@@ -4,12 +4,19 @@ import {
   ChatInputCommandInteraction,
   Client,
   ClientEvents,
+  Interaction,
   InteractionEditReplyOptions,
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
   SlashCommandSubcommandGroupBuilder,
 } from "discord.js";
 import { CommandType } from ".";
+import {
+  RootCommandExecutable,
+  RootCommandNonExecutable,
+} from "@/modules/commands/root-command";
+import SubcommandGroup from "@/modules/commands/sub-command-group";
+import SubCommand from "@/modules/commands/sub-command";
 
 declare module "discord.js" {
   interface Client {
@@ -32,47 +39,31 @@ declare global {
 
   type CommandBuilder =
     | SlashCommandBuilder
+    | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
     | SlashCommandSubcommandGroupBuilder
     | SlashCommandSubcommandBuilder;
 
-  interface ICommand<T extends CommandType, U extends CommandBuilder> {
-    type: T;
-    data: U;
-  }
+  type MiddlewareFunc = (
+    interaction: Interaction,
+    context: Map,
+    next: Function
+  ) => Awaitable<void>;
 
   interface ICommandExecutable {
-    callback(interaction: ChatInputCommandInteraction): Promise<void>;
+    callback(
+      interaction: ChatInputCommandInteraction,
+      context: Map
+    ): Promise<void>;
     autocomplete?(interaction: AutocompleteInteraction): Promise<void>;
   }
 
-  interface ICommandRoot<T extends CommandBuilder>
-    extends ICommand<CommandType.Root, T> {
-    dev?: Boolean;
+  interface ICommandRoot {
+    dev: Boolean;
   }
 
   type RootCommand = RootCommandExecutable | RootCommandNonExecutable;
 
-  interface RootCommandExecutable
-    extends ICommandExecutable,
-      ICommandRoot<
-        Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
-      > {}
-
-  interface RootCommandNonExecutable extends ICommandRoot<SlashCommandBuilder> {
-    subCommands?: Map<string, Subcommand>;
-    subCommandGroups?: Map<string, SubcommandGroup>;
-  }
-
-  interface SubcommandGroup
-    extends ICommand<
-      CommandType.SubCmdGroup,
-      SlashCommandSubcommandGroupBuilder
-    > {
-    subCommands: Map<string, Subcommand>;
-  }
-  interface Subcommand
-    extends ICommandExecutable,
-      ICommand<CommandType.SubCmd, SlashCommandSubcommandBuilder> {}
+  type Command = RootCommand | SubcommandGroup | SubCommand;
 
   // ====================================
   // Paginated Embed

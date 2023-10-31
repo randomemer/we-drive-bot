@@ -1,9 +1,9 @@
 import pterodactyl from "@/modules/api";
 import ServerSocketManager from "@/modules/api/socket";
+import SubCommand from "@/modules/commands/sub-command";
 import ServerModel from "@/modules/db/models/server";
 import sendErrorMessage from "@/modules/utils/errors";
 import logger from "@/modules/utils/logger";
-import { CommandType } from "@/types";
 import {
   ActionRowBuilder,
   Client,
@@ -15,11 +15,11 @@ import {
 } from "discord.js";
 import { produce } from "immer";
 
-export default {
-  type: CommandType.SubCmd,
+export default new SubCommand({
   data: new SlashCommandSubcommandBuilder()
     .setName("minecraft_server")
     .setDescription("Set the default server for all server commands"),
+
   async callback(interaction) {
     try {
       const resp = await pterodactyl.get<PanelAPIResp<PterodactylServer[]>>(
@@ -82,7 +82,7 @@ export default {
       logger.error(error);
     }
   },
-} satisfies Subcommand;
+});
 
 async function updateServerSocket(client: Client, guildId: string) {
   const server = await ServerModel.query().findById(guildId);

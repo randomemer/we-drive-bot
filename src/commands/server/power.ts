@@ -1,12 +1,11 @@
 import ServerSocketManager from "@/modules/api/socket";
+import SubCommand from "@/modules/commands/sub-command";
 import { POWER_CMDS } from "@/modules/utils/constants";
 import sendErrorMessage from "@/modules/utils/errors";
 import logger from "@/modules/utils/logger";
-import { CommandType } from "@/types";
 import { SlashCommandSubcommandBuilder } from "discord.js";
 
-export default {
-  type: CommandType.SubCmd,
+export default new SubCommand({
   data: new SlashCommandSubcommandBuilder()
     .setName("power")
     .setDescription("Send a power command to the server")
@@ -21,6 +20,7 @@ export default {
           })
         )
     ),
+
   async callback(interaction) {
     try {
       const option = interaction.options.get("state", true);
@@ -41,4 +41,4 @@ export default {
       logger.error(error);
     }
   },
-} satisfies Subcommand;
+});

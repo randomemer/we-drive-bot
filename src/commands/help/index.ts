@@ -1,9 +1,12 @@
+import {
+  RootCommandExecutable,
+  RootCommandNonExecutable,
+} from "@/modules/commands/root-command";
 import { DEV_GUILD_ID } from "@/modules/utils/constants";
 import sendErrorMessage from "@/modules/utils/errors";
 import { commandDefinition, defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
-import { CommandType } from "@/types";
 import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
@@ -12,14 +15,14 @@ import {
 } from "discord.js";
 import _ from "lodash";
 
-export default {
-  type: CommandType.Root,
+export default new RootCommandExecutable({
   data: new SlashCommandBuilder()
     .setName("help")
     .setDescription("View information about available commands")
     .addStringOption((option) =>
       option.setName("command").setDescription("Name of the command")
     ),
+
   async callback(interaction) {
     try {
       const cmdOption = interaction.options.getString("command");
@@ -34,7 +37,7 @@ export default {
       logger.error(error);
     }
   },
-} satisfies RootCommand;
+});
 
 async function helpAllCommands(interaction: ChatInputCommandInteraction) {
   const commands = Array.from(interaction.client.slashCommands.values());
@@ -45,9 +48,8 @@ async function helpAllCommands(interaction: ChatInputCommandInteraction) {
   const paginator = new PaginatedEmbedMessage({
     content: sorted,
     builder(items) {
-      const strs = items.map(
-        (cmd) =>
-          `- ${inlineCode("/" + cmd.data.name)} : ${cmd.data.description}`
+      const strs = items.map((cmd) =>
+        commandDefinition(cmd.data.name, cmd.data.description)
       );
 
       const embed = defaultEmbed()
@@ -82,8 +84,8 @@ async function helpCommand(
 
   const infos: string[] = [];
 
-  if ("subCommands" in cmd) {
-    cmd.subCommands!.forEach((subCmd) => {
+  if (cmd instanceof RootCommandNonExecutable) {
+    cmd.subcommands.forEach((subCmd) => {
       infos.push(
         commandDefinition(
           `${cmd.data.name} ${subCmd.data.name}`,
@@ -91,11 +93,9 @@ async function helpCommand(
         )
       );
     });
-  }
 
-  if ("subCommandGroups" in cmd) {
-    cmd.subCommandGroups!.forEach((cmdGroup) => {
-      cmdGroup.subCommands.forEach((subCmd) => {
+    cmd.subcommandGroups.forEach((cmdGroup) => {
+      cmdGroup.subcommands.forEach((subCmd) => {
         infos.push(
           commandDefinition(
             ` ${cmd.data.name} ${cmdGroup.data.name} ${subCmd.data.name}`,

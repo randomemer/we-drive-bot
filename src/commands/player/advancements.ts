@@ -1,12 +1,12 @@
 import advancements from "@/assets/advancements.json";
 import pterodactyl from "@/modules/api";
+import SubCommand from "@/modules/commands/sub-command";
 import ServerModel from "@/modules/db/models/server";
 import UserModel from "@/modules/db/models/user";
 import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed, getPageFooter } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
-import { CommandType } from "@/types";
 import dayjs from "dayjs";
 import { SlashCommandSubcommandBuilder, codeBlock } from "discord.js";
 import _ from "lodash";
@@ -23,8 +23,7 @@ const minisearch = new MiniSearch<Advancement>({
 
 minisearch.addAll(advancements);
 
-export default {
-  type: CommandType.SubCmd,
+export default new SubCommand({
   data: new SlashCommandSubcommandBuilder()
     .setName("advancements")
     .setDescription("View your advancement progress")
@@ -35,6 +34,7 @@ export default {
         .setRequired(true)
         .setAutocomplete(true)
     ),
+
   async callback(interaction) {
     try {
       const option = interaction.options.get("title", true);
@@ -104,6 +104,7 @@ export default {
       logger.error(error);
     }
   },
+
   async autocomplete(interaction) {
     try {
       const query = interaction.options.getFocused();
@@ -122,4 +123,4 @@ export default {
       logger.error(error);
     }
   },
-} satisfies Subcommand;
+});

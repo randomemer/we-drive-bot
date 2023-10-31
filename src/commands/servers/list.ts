@@ -1,17 +1,17 @@
 import pterodactyl from "@/modules/api";
+import SubCommand from "@/modules/commands/sub-command";
 import sendErrorMessage from "@/modules/utils/errors";
 import * as utils from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
-import { CommandType } from "@/types";
 import { SlashCommandSubcommandBuilder, codeBlock } from "discord.js";
 import { table } from "table";
 
-export default {
-  type: CommandType.SubCmd,
+export default new SubCommand({
   data: new SlashCommandSubcommandBuilder()
     .setName("list")
     .setDescription("Get list of servers"),
+
   async callback(interaction) {
     try {
       const resp = await pterodactyl.get<PanelAPIResp<PterodactylServer[]>>(
@@ -48,4 +48,4 @@ export default {
       logger.error(error);
     }
   },
-} satisfies Subcommand;
+});

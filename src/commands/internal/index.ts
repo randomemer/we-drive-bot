@@ -1,16 +1,12 @@
-import { registerSubcommands } from "@/modules/utils/functions";
+import { RootCommandNonExecutable } from "@/modules/commands/root-command";
 import { SlashCommandBuilder } from "discord.js";
 import healthCommand from "./health";
 import reloadCommand from "./reload";
-import { CommandType } from "@/types";
 
-const builder = new SlashCommandBuilder()
-  .setName("internal")
-  .setDescription("Internal commands only for devs");
-
-export default {
-  type: CommandType.Root,
+export default new RootCommandNonExecutable({
   dev: true,
-  data: builder,
-  subCommands: registerSubcommands(builder, [reloadCommand, healthCommand]),
-} satisfies RootCommand;
+  data: new SlashCommandBuilder()
+    .setName("internal")
+    .setDescription("Internal commands only for devs"),
+  subcommands: [reloadCommand, healthCommand],
+});

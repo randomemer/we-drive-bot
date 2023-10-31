@@ -1,9 +1,11 @@
-import { getExecutableCmd } from "@/modules/utils/functions";
+import { getCmdMiddlewares, getExecutableCmd } from "@/modules/utils/functions";
+import logger from "@/modules/utils/logger";
 import {
   AutocompleteInteraction,
   CacheType,
   ChatInputCommandInteraction,
 } from "discord.js";
+import _ from "lodash";
 
 const config: ListenerConfig<"interactionCreate"> = {
   name: "interactionCreate",
@@ -24,7 +26,20 @@ async function handleChatInput(
     return;
   }
 
-  cmd.callback(interaction);
+  const context = new Map();
+
+  const chain = getCmdMiddlewares(cmd);
+
+  let isBroken = true;
+  for (let i = 0; i < chain.length; i++) {
+    const middleware = chain[i];
+
+    isBroken = true;
+    await middleware(interaction, context, () => (isBroken = false));
+    if (isBroken) return;
+  }
+
+  await cmd.callback(interaction, context);
 }
 
 async function handleAutocomplete(interaction: AutocompleteInteraction) {
