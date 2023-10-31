@@ -12,7 +12,7 @@ import logger from "./modules/utils/logger";
 import { DEV_GUILD_ID } from "./modules/utils/constants";
 
 export default class WeDriveClient extends Client {
-  slashCommands = new Map<string, BotCommandRoot>();
+  slashCommands = new Map<string, RootCommand>();
 
   constructor(options: ClientOptions) {
     super(options);
@@ -24,7 +24,7 @@ export default class WeDriveClient extends Client {
 
     for (const item of folderContents) {
       const commandPath = path.join(__dirname, "commands", item);
-      const command: BotCommandRoot = require(commandPath).default;
+      const command: RootCommand = require(commandPath).default;
 
       commands.push(command.data.toJSON());
       this.slashCommands.set(command.data.name, command);

@@ -2,6 +2,7 @@ import ServerModel from "@/modules/db/models/server";
 import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
+import { CommandType } from "@/types";
 import {
   PermissionFlagsBits,
   SlashCommandChannelOption,
@@ -10,7 +11,8 @@ import {
   inlineCode,
 } from "discord.js";
 
-const mcChannelCommand: BotSubcommand = {
+export default {
+  type: CommandType.SubCmd,
   data: new SlashCommandSubcommandBuilder()
     .setName("minecraft_channel")
     .setDescription("Set server channel for this bot's messages")
@@ -47,6 +49,4 @@ const mcChannelCommand: BotSubcommand = {
       logger.error(error);
     }
   },
-};
-
-export default mcChannelCommand;
+} satisfies Subcommand;

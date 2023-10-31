@@ -180,6 +180,23 @@ declare global {
     | StatsEvent
     | TokenExpiringEvent
     | TokenExpiredEvent;
+
+  interface Advancement {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+  }
+
+  interface AdvancementProgress {
+    criteria: Partial<Record<string, string>>;
+    done: Boolean;
+  }
+
+  interface PlayerAdvancements
+    extends Partial<Record<string, AdvancementProgress>> {}
+
+  type ServerPowerState = "start" | "stop" | "restart" | "kill";
 }
 
 export {};

@@ -3,13 +3,12 @@ import {
   ChatInputCommandInteraction,
   Colors,
   EmbedBuilder,
-  PermissionsBitField,
   SlashCommandBuilder,
   SlashCommandSubcommandGroupBuilder,
+  inlineCode,
 } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
-import { BOT_PERMS, BOT_SCOPES, OAUTH_URL } from "./constants";
 
 export function getPageFooter(meta: BuilderFunctionMetadata) {
   return `Showing ${meta.curPage * meta.pageSize + 1} - ${
@@ -19,9 +18,9 @@ export function getPageFooter(meta: BuilderFunctionMetadata) {
 
 export function registerSubcommands(
   mainCommand: SlashCommandBuilder | SlashCommandSubcommandGroupBuilder,
-  subCommands: BotSubcommand[]
+  subCommands: Subcommand[]
 ) {
-  const map = new Map<string, BotSubcommand>();
+  const map = new Map<string, Subcommand>();
 
   subCommands.forEach((cmd) => {
     mainCommand.addSubcommand(cmd.data);
@@ -33,9 +32,9 @@ export function registerSubcommands(
 
 export function registerSubcommandGroups(
   mainCommand: SlashCommandBuilder,
-  subCommandGroups: BotSubcommandGroup[]
+  subCommandGroups: SubcommandGroup[]
 ) {
-  const map = new Map<string, BotSubcommandGroup>();
+  const map = new Map<string, SubcommandGroup>();
 
   subCommandGroups.forEach((group) => {
     mainCommand.addSubcommandGroup(group.data);
@@ -80,4 +79,8 @@ export function getAllAdvancements(): Advancement[] {
   const buffer = fs.readFileSync(filePath);
   const content = buffer.toString("utf8");
   return JSON.parse(content);
+}
+
+export function commandDefinition(name: string, desc: string) {
+  return `- ${inlineCode("/" + name)} : ${desc}`;
 }

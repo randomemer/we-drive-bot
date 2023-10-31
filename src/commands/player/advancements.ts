@@ -6,6 +6,7 @@ import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed, getPageFooter } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
+import { CommandType } from "@/types";
 import dayjs from "dayjs";
 import { SlashCommandSubcommandBuilder, codeBlock } from "discord.js";
 import _ from "lodash";
@@ -22,7 +23,8 @@ const minisearch = new MiniSearch<Advancement>({
 
 minisearch.addAll(advancements);
 
-const advancementsCommand: BotSubcommand = {
+export default {
+  type: CommandType.SubCmd,
   data: new SlashCommandSubcommandBuilder()
     .setName("advancements")
     .setDescription("View your advancement progress")
@@ -120,6 +122,4 @@ const advancementsCommand: BotSubcommand = {
       logger.error(error);
     }
   },
-};
-
-export default advancementsCommand;
+} satisfies Subcommand;

@@ -13,5 +13,3 @@ export const PROCESS_STOP_SIGNALS = ["SIGINT", "SIGHUP", "SIGTERM"] as const;
 export const DEV_GUILD_ID = "1165331231337103370";
 
 export const POWER_CMDS = ["start", "stop", "restart", "kill"];
-
-export const OAUTH_URL = `https://discord.com/api/oauth2/authorize`;

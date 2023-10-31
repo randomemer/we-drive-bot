@@ -3,6 +3,7 @@ import ServerSocketManager from "@/modules/api/socket";
 import ServerModel from "@/modules/db/models/server";
 import sendErrorMessage from "@/modules/utils/errors";
 import logger from "@/modules/utils/logger";
+import { CommandType } from "@/types";
 import {
   ActionRowBuilder,
   Client,
@@ -14,7 +15,8 @@ import {
 } from "discord.js";
 import { produce } from "immer";
 
-const mcServerCommand: BotSubcommand = {
+export default {
+  type: CommandType.SubCmd,
   data: new SlashCommandSubcommandBuilder()
     .setName("minecraft_server")
     .setDescription("Set the default server for all server commands"),
@@ -80,7 +82,7 @@ const mcServerCommand: BotSubcommand = {
       logger.error(error);
     }
   },
-};
+} satisfies Subcommand;
 
 async function updateServerSocket(client: Client, guildId: string) {
   const server = await ServerModel.query().findById(guildId);
@@ -90,5 +92,3 @@ async function updateServerSocket(client: Client, guildId: string) {
 
   new ServerSocketManager(client, server!);
 }
-
-export default mcServerCommand;

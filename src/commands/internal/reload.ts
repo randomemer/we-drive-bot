@@ -1,10 +1,10 @@
+import { CommandType } from "@/types";
 import { SlashCommandSubcommandBuilder } from "discord.js";
 
-const reloadCommand: BotSubcommand = {
+export default {
+  type: CommandType.SubCmd,
   data: new SlashCommandSubcommandBuilder()
     .setName("reload")
     .setDescription("Reload all slash commands or a specific one"),
   async callback(interaction) {},
-};
-
-export default reloadCommand;
+} satisfies Subcommand;

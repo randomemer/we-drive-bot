@@ -3,10 +3,12 @@ import sendErrorMessage from "@/modules/utils/errors";
 import * as utils from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
+import { CommandType } from "@/types";
 import { SlashCommandSubcommandBuilder, codeBlock } from "discord.js";
 import { table } from "table";
 
-const command: BotSubcommand = {
+export default {
+  type: CommandType.SubCmd,
   data: new SlashCommandSubcommandBuilder()
     .setName("list")
     .setDescription("Get list of servers"),
@@ -46,6 +48,4 @@ const command: BotSubcommand = {
       logger.error(error);
     }
   },
-};
-
-export default command;
+} satisfies Subcommand;

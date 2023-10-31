@@ -2,9 +2,11 @@ import ServerSocketManager from "@/modules/api/socket";
 import { POWER_CMDS } from "@/modules/utils/constants";
 import sendErrorMessage from "@/modules/utils/errors";
 import logger from "@/modules/utils/logger";
+import { CommandType } from "@/types";
 import { SlashCommandSubcommandBuilder } from "discord.js";
 
-const powerCommand: BotSubcommand = {
+export default {
+  type: CommandType.SubCmd,
   data: new SlashCommandSubcommandBuilder()
     .setName("power")
     .setDescription("Send a power command to the server")
@@ -39,6 +41,4 @@ const powerCommand: BotSubcommand = {
       logger.error(error);
     }
   },
-};
-
-export default powerCommand;
+} satisfies Subcommand;

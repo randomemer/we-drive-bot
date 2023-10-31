@@ -2,13 +2,15 @@ import ServerModel from "@/modules/db/models/server";
 import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
+import { CommandType } from "@/types";
 import {
   SlashCommandRoleOption,
   SlashCommandSubcommandBuilder,
   roleMention,
 } from "discord.js";
 
-const mcRoleCommand: BotSubcommand = {
+export default {
+  type: CommandType.SubCmd,
   data: new SlashCommandSubcommandBuilder()
     .setName("minecraft_role")
     .setDescription("Set the default minecraft role for pinging members")
@@ -54,6 +56,4 @@ const mcRoleCommand: BotSubcommand = {
       logger.error(error);
     }
   },
-};
-
-export default mcRoleCommand;
+} satisfies Subcommand;

@@ -3,6 +3,7 @@ import { UUID_TOOL_API } from "@/modules/utils/constants";
 import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
+import { CommandType } from "@/types";
 import axios from "axios";
 import {
   SlashCommandStringOption,
@@ -10,7 +11,8 @@ import {
   inlineCode,
 } from "discord.js";
 
-const createCommand: BotSubcommand = {
+export default {
+  type: CommandType.SubCmd,
   data: new SlashCommandSubcommandBuilder()
     .setName("create")
     .setDescription("Get started by creating a profile with a the bot")
@@ -60,6 +62,4 @@ const createCommand: BotSubcommand = {
       logger.error(error);
     }
   },
-};
-
-export default createCommand;
+} satisfies Subcommand;
