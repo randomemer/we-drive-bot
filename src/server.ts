@@ -32,7 +32,7 @@ router.get("invite", "/invite", (ctx) => {
 });
 
 server.use(router.routes()).use(router.allowedMethods());
-server.listen({ signal: controller.signal });
+server.listen({ port: 80, signal: controller.signal });
 
 process.on("SIGTERM", () => {
   logger.info("Shutting down HTTP server");
