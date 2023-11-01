@@ -33,10 +33,14 @@ logs:
 
 build:
 	docker build -t $(image) -f ./docker/Dockerfile.prod .
-	docker run --env-file ./env/.env.prod --name $(container) $(image)
+	docker run --env-file ./env/.env.prod -p 7000:80 --name $(container) $(image)
 
 build-start:
-	docker start $(container)
+	docker run --env-file ./env/.env.prod -p 7000:80 --name $(container) $(image)
+
+build-stop:
+	docker stop $(container)
+	docker rm $(container)
 
 build-clean:
 	docker stop $(container)

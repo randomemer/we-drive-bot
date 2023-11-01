@@ -4,6 +4,8 @@ FROM node:18-alpine
 
 RUN apk add --no-cache --upgrade bash
 
+RUN npm install -g pm2
+
 WORKDIR /app
 
 COPY . .
@@ -19,4 +21,4 @@ RUN yarn prestart
 
 EXPOSE 80
 
-CMD [ "yarn", "start" ]
+CMD [ "pm2-runtime", "start", "ecosystem.config.js" ]

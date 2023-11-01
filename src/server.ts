@@ -8,8 +8,13 @@ const controller = new AbortController();
 const server = new Koa({});
 const router = new KoaRouter();
 
-server.on("ready", () => {
+server.on("listening", () => {
   logger.info("HTTP server is running");
+});
+
+server.use(async (ctx, next) => {
+  logger.info(`HTTP ${ctx.request.method} ${ctx.request.url}`);
+  await next();
 });
 
 router.get("root", "/", async (ctx) => {
@@ -32,7 +37,7 @@ router.get("invite", "/invite", (ctx) => {
 });
 
 server.use(router.routes()).use(router.allowedMethods());
-server.listen({ port: 80, signal: controller.signal });
+server.listen({ port: Number(process.env.PORT), signal: controller.signal });
 
 process.on("SIGTERM", () => {
   logger.info("Shutting down HTTP server");

@@ -1,17 +1,16 @@
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
+import duration from "dayjs/plugin/duration";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import dotenv from "dotenv";
-import duration from "dayjs/plugin/duration";
 import WeDriveClient from "./bot";
 import ServerSocketManager from "./modules/api/socket";
 import "./modules/db";
 import { knex } from "./modules/db";
 import { PROCESS_STOP_SIGNALS } from "./modules/utils/constants";
-import logger from "./modules/utils/logger";
-import { fork } from "child_process";
 import { getInviteURL } from "./modules/utils/functions";
+import logger from "./modules/utils/logger";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -23,9 +22,6 @@ dotenv.config({ path: `env/.env.${process.env.NODE_ENV}` });
 const client = new WeDriveClient({
   intents: ["GuildMessages", "MessageContent", "Guilds"],
 });
-
-const resolvedPath = require.resolve("./server");
-const httpServer = fork(resolvedPath);
 
 async function main() {
   try {
@@ -57,9 +53,6 @@ async function shutdown() {
 
   // 3. Destroy client
   await client.destroy();
-
-  // 4. Kill child process
-  httpServer.kill();
 }
 
 PROCESS_STOP_SIGNALS.forEach((signal) => {
