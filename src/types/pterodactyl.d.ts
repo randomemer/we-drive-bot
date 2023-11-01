@@ -156,7 +156,7 @@ declare global {
   interface AuthSuccessEvent extends GenericSocketEvent<"auth success"> {}
 
   interface StatusEvent extends GenericSocketEvent<"status"> {
-    args: [string];
+    args: [ServerStatus];
   }
 
   interface ConsoleOutputEvent extends GenericSocketEvent<"console output"> {
@@ -164,6 +164,21 @@ declare global {
   }
 
   type ServerStatus = "starting" | "running" | "stopping" | "offline";
+
+  type ServerPowerState = "start" | "stop" | "restart" | "kill";
+
+  interface ServerStats {
+    memory_bytes: number;
+    memory_limit_bytes: number;
+    cpu_absolute: number;
+    network: {
+      rx_bytes: number;
+      tx_bytes: number;
+    };
+    uptime: 0;
+    state: ServerStatus;
+    disk_bytes: number;
+  }
 
   interface StatsEvent extends GenericSocketEvent<"stats"> {
     args: [ServerStatus];
@@ -195,8 +210,6 @@ declare global {
 
   interface PlayerAdvancements
     extends Partial<Record<string, AdvancementProgress>> {}
-
-  type ServerPowerState = "start" | "stop" | "restart" | "kill";
 
   interface MinecraftServerOperator {
     uuid: string;

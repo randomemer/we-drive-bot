@@ -13,3 +13,17 @@ export const PROCESS_STOP_SIGNALS = ["SIGINT", "SIGHUP", "SIGTERM"] as const;
 export const DEV_GUILD_ID = "1165331231337103370";
 
 export const POWER_CMDS = ["start", "stop", "restart", "kill"];
+
+export enum StatusMessage {
+  "starting" = "Server starting...",
+  "running" = "Server is online!",
+  "stopping" = "Server is now stopping...",
+  "offline" = "Server is now offline",
+}
+
+export enum AsyncStatus {
+  Idle = "idle",
+  Pending = "pending",
+  Fulfilled = "fufilled",
+  Rejected = "rejected",
+}

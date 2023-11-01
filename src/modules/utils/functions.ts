@@ -1,3 +1,4 @@
+import { DataSizes } from "@/types";
 import {
   AutocompleteInteraction,
   ChatInputCommandInteraction,
@@ -60,4 +61,10 @@ export function getCmdMiddlewares(cmd: Command | undefined): MiddlewareFunc[] {
   if (!cmd) return [];
 
   return [...getCmdMiddlewares(cmd.parent), ...cmd.middleware];
+}
+
+export function convertBytes(bytes: number, factor: DataSizes): string {
+  return (bytes / factor).toLocaleString(undefined, {
+    maximumFractionDigits: 2,
+  });
 }

@@ -8,7 +8,6 @@ import {
   SlashCommandChannelOption,
   SlashCommandSubcommandBuilder,
   channelMention,
-  inlineCode,
 } from "discord.js";
 
 export default new SubCommand({
@@ -38,7 +37,7 @@ export default new SubCommand({
       await server.$query().patch({ mc_channel: channel.id });
 
       const embed = defaultEmbed()
-        .setTitle(inlineCode("✅ Minecraft Channel Configured"))
+        .setTitle("✅ Minecraft Channel Configured")
         .setDescription(
           `The bot will now post messages in ${channelMention(channel.id)}`
         );

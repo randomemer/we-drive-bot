@@ -25,7 +25,9 @@ export default new SubCommand({
       // @ts-ignore
       const diskUsage = await osutils.drive.info();
       const uptime = osutils.os.uptime();
-      const uptimef = dayjs.duration(uptime * 1000).format("D [d] H [h] s [s]");
+      const uptimef = dayjs
+        .duration(uptime * 1000)
+        .format("D [d] H [h] m [m] s [s]");
       const processes = await osutils.proc.totalProcesses();
       const netStat = await osutils.netstat.inOut();
 

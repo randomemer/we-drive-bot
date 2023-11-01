@@ -1,16 +1,13 @@
 import pterodactyl from "@/modules/api";
-import ServerModel from "@/modules/db/models/server";
-import { defaultEmbed } from "@/modules/utils/functions";
+import ServerModel, { ServerObject } from "@/modules/db/models/server";
+import { convertBytes, defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
-import {
-  Channel,
-  ChannelType,
-  Client,
-  MessageCreateOptions,
-  roleMention,
-} from "discord.js";
+import { DataSizes } from "@/types";
+import dayjs from "dayjs";
+import { Channel, Client, Message, codeBlock, roleMention } from "discord.js";
 import { ClientRequest, IncomingMessage } from "http";
 import { RawData, WebSocket } from "ws";
+import { AsyncStatus, StatusMessage } from "@/modules/utils/constants";
 
 export default class ServerSocketManager {
   static managers = new Map<string, ServerSocketManager>();
@@ -23,6 +20,29 @@ export default class ServerSocketManager {
     }
 
     logger.info(`Created ${servers.length} pterodactyl sockets`);
+  }
+
+  static updateWebsocket(serverId: string, updated: Partial<ServerObject>) {
+    const manager = this.managers.get(serverId);
+    if (!manager) return;
+
+    const { server } = manager;
+
+    if (server.mc_role !== updated.mc_role) {
+      server.mc_role = updated.mc_role ?? null;
+    }
+
+    if (server.mc_channel !== updated.mc_channel) {
+      server.mc_channel = updated.mc_channel ?? null;
+
+      manager.stopRealtimeUpdates();
+      manager.startRealtimeUpdates();
+    }
+
+    if (server.mc_server !== updated.mc_server) {
+      manager.close();
+      new ServerSocketManager(manager.client, manager.server);
+    }
   }
 
   static closeWebsockets() {
@@ -38,6 +58,15 @@ export default class ServerSocketManager {
 
   token: string;
   socket: WebSocket;
+
+  logs: string[] = [];
+  status: ServerStatus = "offline";
+  stats?: ServerStats | undefined;
+
+  timer: NodeJS.Timeout;
+
+  message?: Message | undefined;
+  realtimeUpdateStatus: AsyncStatus = AsyncStatus.Idle;
 
   constructor(client: Client, server: ServerModel) {
     this.client = client;
@@ -79,11 +108,11 @@ export default class ServerSocketManager {
 
   // Socket event handlers
 
-  private async onOpen() {
+  private onOpen() {
     this.sendAuth(this.token);
   }
 
-  private async onMessage(event: RawData, isBinary: Boolean) {
+  private onMessage(event: RawData, isBinary: Boolean) {
     const json = event.toString("utf8");
     const message: SocketEvent = JSON.parse(json);
 
@@ -117,16 +146,16 @@ export default class ServerSocketManager {
     }
   }
 
-  private async onError(error: Error) {
+  private onError(error: Error) {
     logger.error(error, `Websocket error on ${this.socket.url}`);
   }
 
-  private async onClose(code: number) {
+  private onClose(code: number) {
     logger.info(`Websocket (${this.socket.url}) closed with code (${code})`);
     ServerSocketManager.managers.delete(this.server.id);
   }
 
-  private async onUnexpectedResp(req: ClientRequest, res: IncomingMessage) {
+  private onUnexpectedResp(req: ClientRequest, res: IncomingMessage) {
     let chunks = "";
 
     res.on("data", (chunk) => {
@@ -143,15 +172,14 @@ export default class ServerSocketManager {
 
   // Message handlers
 
-  private async onAuthSuccess() {
+  private onAuthSuccess() {
     logger.info(
       `Auth success for (${this.server.id}, ${this.server.mc_server})`
     );
   }
 
   private async onStatus(message: StatusEvent) {
-    const status = message.args[0];
-
+    this.status = message.args[0];
     const channelId = this.server.mc_channel;
 
     // @TODO : Add a message per day saying this server does not have a default mc channel
@@ -164,30 +192,33 @@ export default class ServerSocketManager {
       channel = await this.client.channels.fetch(channelId, { force: true });
     }
     if (!channel) return;
+    if (!channel.isTextBased()) return;
 
-    if (channel.type !== ChannelType.GuildText) return;
+    if (this.status === "offline") {
+      this.stopRealtimeUpdates();
+    } else {
+      this.startRealtimeUpdates();
+    }
 
-    const embed = defaultEmbed()
-      .setTitle("Server Status")
-      .setDescription(`Your server is ${status}`);
-
+    const emoji = this.getStatusEmoji(this.status);
     const role = this.server.mc_role;
 
-    const payload: MessageCreateOptions = {
-      embeds: [embed],
-    };
-    if (role && status === "running") {
-      payload.content = roleMention(role);
+    let content = `${emoji} ${StatusMessage[this.status]}`;
+    if (!!role && this.status === "running") {
+      content = roleMention(role) + " " + content;
     }
-    await channel.send(payload);
+    await channel.send(content);
   }
 
-  private async onStats(message: StatsEvent) {
-    // logger.info(message);
+  private onStats(message: StatsEvent) {
+    this.stats = JSON.parse(message.args[0]);
   }
 
-  private async onConsoleOutput(message: ConsoleOutputEvent) {
-    // logger.info(message);
+  private onConsoleOutput(message: ConsoleOutputEvent) {
+    this.logs.push(message.args[0]);
+    while (this.logs.length > 10) {
+      this.logs.shift();
+    }
   }
 
   private async onTokenExpiring() {
@@ -198,7 +229,7 @@ export default class ServerSocketManager {
     this.sendAuth(this.token);
   }
 
-  private async onTokenExpired() {
+  private onTokenExpired() {
     ServerSocketManager.managers.delete(this.server.id);
     logger.info(
       `Socket auth expired (${this.server.mc_server},${this.server.id})`
@@ -229,14 +260,131 @@ export default class ServerSocketManager {
       this.socket.readyState === WebSocket.CLOSING
     )
       return;
+    this.stopRealtimeUpdates();
     this.socket.removeAllListeners();
     this.socket.close();
     ServerSocketManager.managers.delete(this.server.id);
   }
 
   terminate() {
+    this.stopRealtimeUpdates();
     this.socket.removeAllListeners();
     this.socket.terminate();
     ServerSocketManager.managers.delete(this.server.id);
+  }
+
+  // Realtime updates
+
+  startRealtimeUpdates() {
+    if (!this.server.mc_channel) return;
+    if (this.socket.readyState !== WebSocket.OPEN) return;
+
+    this.sendUpdate();
+    if (this.status !== "offline") {
+      this.timer = setInterval(this.sendUpdate.bind(this), 2000);
+    }
+  }
+
+  stopRealtimeUpdates() {
+    clearInterval(this.timer);
+    this.message = undefined;
+  }
+
+  async sendUpdate() {
+    if (!this.stats) return;
+    if (this.realtimeUpdateStatus === AsyncStatus.Pending) return;
+
+    try {
+      const embed = defaultEmbed();
+      const statusEmoji = this.getStatusEmoji(this.stats.state);
+
+      embed.setTitle(`${statusEmoji} Server Status`);
+
+      if (this.logs.length > 0) {
+        embed.setDescription(codeBlock(this.logs.join("\n")));
+      }
+
+      embed.addFields(
+        {
+          name: "📊 Status",
+          value: this.stats.state,
+          inline: true,
+        },
+        {
+          name: "🕛 Uptime",
+          value: dayjs
+            .duration(this.stats.uptime)
+            .format("D [d] H [h] m [m] s [s]"),
+          inline: true,
+        },
+        {
+          name: "💻 CPU Usage",
+          value: `${this.stats.cpu_absolute} %`,
+          inline: true,
+        },
+        {
+          name: "📥 Network RX",
+          value:
+            convertBytes(this.stats.network.rx_bytes, DataSizes.MEGA_BYTE) +
+            ` MiB`,
+          inline: true,
+        },
+        {
+          name: "📤 Network TX",
+          value:
+            convertBytes(this.stats.network.rx_bytes, DataSizes.MEGA_BYTE) +
+            " MiB",
+          inline: true,
+        },
+        {
+          name: "🧠 Memory Usage",
+          value: `${convertBytes(
+            this.stats.memory_bytes,
+            DataSizes.MEGA_BYTE
+          )} MiB / ${convertBytes(
+            this.stats.memory_limit_bytes,
+            DataSizes.MEGA_BYTE
+          )} MiB`,
+          inline: true,
+        }
+      );
+
+      if (!this.message) {
+        const channel = await this.client.channels.fetch(
+          this.server.mc_channel!
+        );
+
+        if (channel?.isTextBased()) {
+          this.message = await channel?.send({ embeds: [embed] });
+        }
+      } else {
+        await this.message.edit({ embeds: [embed] });
+      }
+
+      this.realtimeUpdateStatus = AsyncStatus.Fulfilled;
+    } catch (error) {
+      this.realtimeUpdateStatus = AsyncStatus.Rejected;
+      logger.error(error);
+    }
+  }
+
+  // Utils
+  getStatusEmoji(status?: ServerStatus) {
+    switch (status) {
+      case "running":
+        return "🏃‍♂️";
+
+      case "offline":
+        return "💤";
+
+      case "starting":
+        return "🚀";
+
+      case "stopping":
+        return "🛑";
+
+      default:
+        return "";
+    }
   }
 }

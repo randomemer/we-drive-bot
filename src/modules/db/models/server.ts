@@ -1,4 +1,5 @@
-import { Model, ModelObject } from "objection";
+import ServerSocketManager from "@/modules/api/socket";
+import { Model, ModelObject, ModelOptions, QueryContext } from "objection";
 
 class ServerModel extends Model {
   id: string;
@@ -10,6 +11,21 @@ class ServerModel extends Model {
 
   static idColumn: string | string[] = "id";
   static tableName: string = "servers";
+
+  $afterUpdate(
+    opt: ModelOptions,
+    queryContext: QueryContext
+  ): void | Promise<any> {
+    const old = opt.old as ServerObject | undefined;
+    if (!old) return;
+    ServerSocketManager.updateWebsocket(old.id, this);
+  }
+
+  $afterDelete(queryContext: QueryContext): void | Promise<any> {
+    const manager = ServerSocketManager.managers.get(this.id);
+    if (!manager) return;
+    manager.close();
+  }
 }
 
 export type ServerObject = ModelObject<ServerModel>;
