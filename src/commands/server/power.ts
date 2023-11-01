@@ -5,6 +5,7 @@ import ServerModel from "@/modules/db/models/server";
 import UserModel from "@/modules/db/models/user";
 import { POWER_CMDS } from "@/modules/utils/constants";
 import sendErrorMessage, { AppError } from "@/modules/utils/errors";
+import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
 import {
   PermissionFlagsBits,
@@ -114,6 +115,14 @@ export default new SubCommand({
         default:
           break;
       }
+
+      const embed = defaultEmbed()
+        .setTitle("✅ Command Executed")
+        .setDescription(
+          `${inlineCode(state)} command has been sent to the minecraft server`
+        );
+
+      await interaction.editReply({ embeds: [embed] });
     } catch (error) {
       await sendErrorMessage(error as Error, interaction);
       logger.error(error);
