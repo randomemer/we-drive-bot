@@ -1,10 +1,11 @@
-import logger from "./modules/utils/logger";
 import Koa from "koa";
 import KoaRouter from "koa-router";
-import { getInviteURL } from "./modules/utils/functions";
 import osu from "node-os-utils";
+import { getInviteURL } from "./modules/utils/functions";
+import logger from "./modules/utils/logger";
 
-const server = new Koa();
+const controller = new AbortController();
+const server = new Koa({});
 const router = new KoaRouter();
 
 server.on("ready", () => {
@@ -31,6 +32,12 @@ router.get("invite", "/invite", (ctx) => {
 });
 
 server.use(router.routes()).use(router.allowedMethods());
-server.listen(80);
+server.listen({ signal: controller.signal });
+
+process.on("SIGTERM", () => {
+  logger.info("Shutting down HTTP server");
+  controller.abort();
+  process.exit(0);
+});
 
 export default server;

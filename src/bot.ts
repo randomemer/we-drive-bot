@@ -24,7 +24,7 @@ export default class WeDriveClient extends Client {
       const commandPath = path.join(__dirname, "commands", item);
       const command: RootCommand = require(commandPath).default;
 
-      if (process.env.NODE_ENV === "prod" && command.dev) {
+      if (process.env.NODE_ENV === "prod" && !command.dev) {
         globalCmds.push(command.data.toJSON());
       } else {
         devCmds.push(command.data.toJSON());
