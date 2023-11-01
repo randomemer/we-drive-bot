@@ -25,6 +25,8 @@ services:
       - drive
     volumes:
       - ./:/app
+    ports:
+      - "7000:80"
 
 networks:
   drive:

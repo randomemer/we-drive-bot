@@ -14,4 +14,6 @@ RUN yarn build
 # RUN yarn knex migrate:latest --env prod
 RUN yarn prestart
 
+EXPOSE 80
+
 CMD [ "yarn", "start" ]
