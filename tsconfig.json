@@ -20,7 +20,6 @@
     "removeComments": true,
     "typeRoots": ["node_modules/@types", "src/types"],
     "sourceMap": false,
-    "declaration": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]

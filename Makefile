@@ -1,7 +1,10 @@
 yml := docker-compose.yml
 env ?= dev
 
-.PHONY: start stop up down clean bot-sh db-sh logs build
+image := we-drive-image
+container := we-drive-container
+
+.PHONY: start stop up down clean bot-sh db-sh logs build build-clean build-start
 
 start:
 	docker compose --env-file env/.env.$(env) -f $(yml) start
@@ -27,3 +30,15 @@ db-sh:
 
 logs:
 	docker compose --env-file env/.env.$(env) -f $(yml) logs --tail=100
+
+build:
+	docker build -t $(image) -f ./docker/Dockerfile.prod .
+	docker run --env-file ./env/.env.prod --name $(container) $(image)
+
+build-start:
+	docker start $(container)
+
+build-clean:
+	docker stop $(container)
+	docker rm $(container)
+	docker image rm $(image)

@@ -2,11 +2,14 @@
 
 FROM node:18-alpine
 
+RUN apk add --no-cache --upgrade bash
+
 WORKDIR /app
 
-# RUN --mount=type=secret,id=env,--target=
-
 COPY . .
+
+RUN chmod +x ./docker/env_util.sh
+RUN /bin/sh -c ./docker/env_util.sh
 
 RUN yarn install
 RUN yarn build

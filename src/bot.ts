@@ -46,7 +46,6 @@ export default class WeDriveClient extends Client {
 
   async registerEventListeners(): Promise<void> {
     let files = fs.readdirSync(path.join(__dirname, "events"));
-    files = files.filter((file) => file.endsWith(".ts"));
 
     for (const file of files) {
       const filePath = path.join(__dirname, "events", file);
