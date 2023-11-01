@@ -29,10 +29,10 @@ export default new SubCommand({
 
       if (player) {
         const embed = defaultEmbed()
-          .setTitle(inlineCode("Your profile has already been created"))
+          .setTitle("Player Profile Already Created")
           .addFields([
-            { name: "Username", value: inlineCode(player.mc_name ?? "<nil>") },
-            { name: "UUID", value: inlineCode(player.mc_uuid ?? "<nil>") },
+            { name: "Username", value: player.mc_name ?? "<nil>" },
+            { name: "UUID", value: player.mc_uuid ?? "<nil>" },
           ]);
         await interaction.editReply({ embeds: [embed] });
         return;
@@ -50,10 +50,10 @@ export default new SubCommand({
       });
 
       const embed = defaultEmbed()
-        .setTitle(inlineCode("✅ Player Profile Created"))
+        .setTitle("✅ Player Profile Created")
         .addFields([
-          { name: "Username", value: inlineCode(username) },
-          { name: "UUID", value: inlineCode(uuid) },
+          { name: "Username", value: username },
+          { name: "UUID", value: uuid },
         ]);
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {

@@ -6,6 +6,8 @@ export const BOT_PERMS = [PermissionFlagsBits.SendMessages];
 
 export const BOT_SCOPES = [OAuth2Scopes.Bot, OAuth2Scopes.ApplicationsCommands];
 
+export const OAUTH_URL = `https://discord.com/api/oauth2/authorize`;
+
 export const ADVANCEMENTS_URL = `https://minecraft.fandom.com/wiki/Advancement`;
 
 export const PROCESS_STOP_SIGNALS = ["SIGINT", "SIGHUP", "SIGTERM"] as const;

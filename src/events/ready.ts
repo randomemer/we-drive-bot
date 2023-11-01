@@ -13,13 +13,6 @@ const config: ListenerConfig<"ready"> = {
       // 2. Init Sockets
       await ServerSocketManager.initWebsockets(client);
 
-      // 3. Generate invite link
-      const url = client.generateInvite({
-        permissions: BOT_PERMS,
-        scopes: BOT_SCOPES,
-      });
-      logger.info(`Invite URL : ${url}`);
-
       client.user.presence.set({
         activities: [{ name: "Driving", type: ActivityType.Playing }],
       });

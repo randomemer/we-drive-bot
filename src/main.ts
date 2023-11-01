@@ -11,6 +11,7 @@ import { knex } from "./modules/db";
 import { PROCESS_STOP_SIGNALS } from "./modules/utils/constants";
 import logger from "./modules/utils/logger";
 import { fork } from "child_process";
+import { getInviteURL } from "./modules/utils/functions";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -34,6 +35,9 @@ async function main() {
 
     // Register events
     await client.registerEventListeners();
+
+    // Get Invite URL
+    logger.info(getInviteURL());
   } catch (error) {
     logger.error(error, "Failed to initialize client");
     throw error;

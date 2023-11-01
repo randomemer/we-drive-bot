@@ -4,11 +4,13 @@ import {
   ChatInputCommandInteraction,
   Colors,
   EmbedBuilder,
+  PermissionsBitField,
   inlineCode,
 } from "discord.js";
 import _ from "lodash";
 import fs from "node:fs";
 import path from "node:path";
+import { BOT_PERMS, BOT_SCOPES, OAUTH_URL } from "./constants";
 
 export function getPageFooter(meta: BuilderFunctionMetadata) {
   return `Showing ${meta.curPage * meta.pageSize + 1} - ${
@@ -67,4 +69,16 @@ export function convertBytes(bytes: number, factor: DataSizes): string {
   return (bytes / factor).toLocaleString(undefined, {
     maximumFractionDigits: 2,
   });
+}
+
+export function getInviteURL() {
+  const perms = new PermissionsBitField().add(...BOT_PERMS);
+
+  const params = new URLSearchParams({
+    client_id: process.env.BOT_APP_ID!,
+    permissions: perms.bitfield.toString(),
+    scope: BOT_SCOPES.join(" "),
+  });
+
+  return `${OAUTH_URL}?${params}`;
 }

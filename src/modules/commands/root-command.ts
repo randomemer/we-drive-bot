@@ -35,6 +35,7 @@ export class RootCommandExecutable
 
     this.callback = options.callback;
     this.autocomplete = options.autocomplete;
+    this.dev = options.dev ?? false;
   }
 
   callback: (
@@ -68,6 +69,8 @@ export class RootCommandNonExecutable extends BaseCommand {
 
   constructor(options: RootCommandNonExecutableOptions) {
     super({ ...options, type: CommandType.Root });
+
+    this.dev = options.dev ?? false;
 
     if (options.subcommands) {
       for (const cmd of options.subcommands) {

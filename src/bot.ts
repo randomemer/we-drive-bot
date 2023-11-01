@@ -1,15 +1,8 @@
-import {
-  Client,
-  ClientEvents,
-  ClientOptions,
-  REST,
-  RESTPostAPIChatInputApplicationCommandsJSONBody,
-  Routes,
-} from "discord.js";
+import { Client, ClientEvents, ClientOptions, REST, Routes } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
-import logger from "./modules/utils/logger";
 import { DEV_GUILD_ID } from "./modules/utils/constants";
+import logger from "./modules/utils/logger";
 
 export default class WeDriveClient extends Client {
   slashCommands = new Map<string, RootCommand>();
@@ -19,29 +12,47 @@ export default class WeDriveClient extends Client {
   }
 
   async registerSlashCommands(): Promise<void> {
+    const appId = process.env.BOT_APP_ID!;
+    const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN!);
+
+    // 1. Read files and get all commands
     const folderContents = fs.readdirSync(path.join(__dirname, "commands"));
-    const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
+    const globalCmds: any[] = [];
+    const devCmds: any[] = [];
 
     for (const item of folderContents) {
       const commandPath = path.join(__dirname, "commands", item);
       const command: RootCommand = require(commandPath).default;
 
-      commands.push(command.data.toJSON());
+      if (process.env.NODE_ENV === "prod" && command.dev) {
+        globalCmds.push(command.data.toJSON());
+      } else {
+        devCmds.push(command.data.toJSON());
+      }
+
       this.slashCommands.set(command.data.name, command);
     }
 
-    const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN!);
+    // 2. Deploy globals commands separately
 
-    logger.info(`Deploying ${commands.length} application (/) commands`);
+    if (process.env.NODE_ENV === "prod") {
+      logger.info(`Deploying ${globalCmds.length} application (/) commands`);
 
-    await rest.put(
-      Routes.applicationGuildCommands(process.env.BOT_APP_ID!, DEV_GUILD_ID),
-      { body: commands }
-    );
+      await rest.put(Routes.applicationCommands(appId), { body: globalCmds });
 
-    logger.info(
-      `Sucessfully deployed ${commands.length} application (/) commands\n`
-    );
+      logger.info(
+        `Sucessfully deployed ${globalCmds.length} application (/) commands\n`
+      );
+    }
+
+    // 3. Deploy development guild commands
+    logger.info(`Deploying ${devCmds.length} dev (/) commands`);
+
+    await rest.put(Routes.applicationGuildCommands(appId, DEV_GUILD_ID), {
+      body: devCmds,
+    });
+
+    logger.info(`Sucessfully deployed ${devCmds.length} dev (/) commands\n`);
   }
 
   async registerEventListeners(): Promise<void> {

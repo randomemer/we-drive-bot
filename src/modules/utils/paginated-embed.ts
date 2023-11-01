@@ -62,12 +62,10 @@ export default class PaginatedEmbedMessage<T> {
     data: PaginatedEmbedMessageData<T>,
     options?: Partial<PaginatedEmbedMessageOptions>
   ) {
-    if (!options) {
-      this.options = _.defaults(this.options, {
-        pageSize: 10,
-        btnTimeout: 60_000,
-      });
-    }
+    this.options = _.defaults(this.options, {
+      pageSize: 10,
+      btnTimeout: 60_000,
+    });
 
     this.items = data.content;
     this.maxPageIndex =
@@ -84,11 +82,17 @@ export default class PaginatedEmbedMessage<T> {
     const actionRow = produce(this.paginationRowComponents, (cmps) => {
       for (const button of cmps.components) {
         button.disabled = !this.isActive;
+        if (button.custom_id === "first") {
+          button.disabled = this.pageIndex === 0;
+        }
         if (button.custom_id === "prev") {
           button.disabled = !this.hasPrevious(page);
         }
         if (button.custom_id === "next") {
           button.disabled = !this.hasNext(page);
+        }
+        if (button.custom_id === "last") {
+          button.disabled = this.pageIndex === this.maxPageIndex;
         }
       }
     });
