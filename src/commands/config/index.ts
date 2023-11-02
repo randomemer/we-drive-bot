@@ -5,6 +5,7 @@ import backupCron from "./backup-cron";
 import mcChannel from "./mc-channel";
 import mcRole from "./mc-role";
 import mcServer from "./mc-server";
+import view from "./view";
 
 export default new RootCommandNonExecutable({
   data: new SlashCommandBuilder()
@@ -12,7 +13,7 @@ export default new RootCommandNonExecutable({
     .setDescription("Manage the bot's settings")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
-  subcommands: [mcRole, mcChannel, mcServer, backupCron],
+  subcommands: [mcRole, mcChannel, mcServer, backupCron, view],
 
   middleware: async function (interaction, ctx, next) {
     const server = await ServerModel.query().findById(interaction.guildId!);
