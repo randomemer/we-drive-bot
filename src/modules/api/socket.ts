@@ -43,8 +43,12 @@ export default class ServerSocketManager {
     }
 
     if (server.mc_server !== updated.mc_server) {
+      server.mc_server = updated.mc_server ?? null;
       manager.close();
-      new ServerSocketManager(manager.client, manager.server);
+
+      if (server.mc_server) {
+        new ServerSocketManager(manager.client, server);
+      }
     }
   }
 

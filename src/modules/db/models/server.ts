@@ -1,3 +1,4 @@
+import BackupManager from "@/modules/api/backups";
 import ServerSocketManager from "@/modules/api/socket";
 import { Model, ModelObject, ModelOptions, QueryContext } from "objection";
 
@@ -20,6 +21,7 @@ class ServerModel extends Model {
     const old = opt.old as ServerObject | undefined;
     if (!old) return;
     ServerSocketManager.updateWebsocket(old.id, this);
+    BackupManager.updateSchedule(old.id, this);
   }
 
   $afterDelete(queryContext: QueryContext): void | Promise<any> {

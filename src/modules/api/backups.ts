@@ -1,4 +1,4 @@
-import ServerModel from "@/modules/db/models/server";
+import ServerModel, { ServerObject } from "@/modules/db/models/server";
 import { MAX_BACKUPS } from "@/modules/utils/constants";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
@@ -29,10 +29,56 @@ export default class BackupManager {
     logger.info(`Created ${this.managers.size} backup managers`);
   }
 
+  static async updateSchedule(
+    serverId: string,
+    updated: Partial<ServerObject>
+  ) {
+    const manager = this.managers.get(serverId);
+    if (!manager) return;
+    const { server } = manager;
+
+    // Handle channel config change
+    if (server.mc_channel !== updated.mc_channel) {
+      server.mc_channel = updated.mc_channel ?? null;
+
+      if (server.mc_channel) {
+        manager.channel = await manager.client.channels.fetch(
+          server.mc_channel
+        );
+      } else manager.channel = null;
+    }
+
+    // Handle MC server config change
+    if (server.mc_server !== updated.mc_server) {
+      server.mc_server = updated.mc_server ?? null;
+      manager.cleanup();
+
+      if (server.mc_server) {
+        this.managers.set(server.id, new BackupManager(manager.client, server));
+      }
+    }
+
+    // Handle cron schedule change
+    if (server.backup_cron !== updated.backup_cron) {
+      server.backup_cron = updated.backup_cron ?? null;
+
+      if (server.backup_cron) {
+        manager.scheduledTask.stop();
+        manager.scheduledTask = cron.schedule(
+          server.backup_cron,
+          manager.backup.bind(manager),
+          {
+            runOnInit: false,
+            timezone: "Etc/UTC",
+          }
+        );
+      }
+    }
+  }
+
   static stopSchedules() {
-    this.managers.forEach((manager, key) => {
-      manager.scheduledTask?.stop();
-      this.managers.delete(key);
+    this.managers.forEach((manager) => {
+      manager.cleanup();
     });
   }
 
@@ -106,6 +152,11 @@ export default class BackupManager {
   // Deletes a specific backup
   async delete(id: string): Promise<void> {
     await pterodactyl.delete(`servers/${this.server.mc_server}/backups/${id}`);
+  }
+
+  cleanup() {
+    this.scheduledTask?.stop();
+    BackupManager.managers.delete(this.server.id);
   }
 
   // Message helpers
