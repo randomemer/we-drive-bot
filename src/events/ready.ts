@@ -1,5 +1,5 @@
+import BackupManager from "@/modules/api/backups";
 import ServerSocketManager from "@/modules/api/socket";
-import { BOT_PERMS, BOT_SCOPES } from "@/modules/utils/constants";
 import logger from "@/modules/utils/logger";
 import { ActivityType } from "discord.js";
 
@@ -10,8 +10,9 @@ const config: ListenerConfig<"ready"> = {
       // 1. Register slash command
       await client.registerSlashCommands();
 
-      // 2. Init Sockets
+      // 2. Init Managers
       await ServerSocketManager.initWebsockets(client);
+      await BackupManager.createSchedules(client);
 
       client.user.presence.set({
         activities: [{ name: "Driving", type: ActivityType.Playing }],

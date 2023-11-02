@@ -10,6 +10,7 @@ import { knex } from "./modules/db";
 import { PROCESS_STOP_SIGNALS } from "./modules/utils/constants";
 import { getInviteURL } from "./modules/utils/functions";
 import logger from "./modules/utils/logger";
+import BackupManager from "./modules/api/backups";
 
 dotenv.config({ path: `env/.env.${process.env.NODE_ENV}` });
 
@@ -44,8 +45,9 @@ main();
 // Process handling
 
 async function shutdown() {
-  // 1. Terminate sockets
+  // 1. Cleanup managers
   ServerSocketManager.terminateWebsockets();
+  BackupManager.stopSchedules();
 
   // 2. Close database connections
   await knex.destroy();

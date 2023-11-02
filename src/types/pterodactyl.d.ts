@@ -243,10 +243,10 @@ declare global {
       is_locked: boolean;
       name: string;
       ignored_files: string[];
-      checksum: string;
+      checksum: string | null;
       bytes: number;
       created_at: string;
-      completed_at: string;
+      completed_at: string | null;
       is_automated: boolean;
     };
   }
