@@ -6,6 +6,7 @@ class ServerModel extends Model {
   mc_role: string | null;
   mc_server: string | null;
   mc_channel: string | null;
+  backup_cron: string | null;
   created_at: Date;
   updated_at: Date;
 
