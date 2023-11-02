@@ -25,9 +25,13 @@ class ServerModel extends Model {
   }
 
   $afterDelete(queryContext: QueryContext): void | Promise<any> {
-    const manager = ServerSocketManager.managers.get(this.id);
-    if (!manager) return;
-    manager.close();
+    const socketManager = ServerSocketManager.managers.get(this.id);
+    if (!socketManager) return;
+    socketManager.close();
+
+    const backupManager = BackupManager.managers.get(this.id);
+    if (!backupManager) return;
+    backupManager.cleanup();
   }
 }
 
