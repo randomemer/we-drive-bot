@@ -1,4 +1,4 @@
-import { CommandType } from "@/types";
+import { CommandType } from "@/modules/utils/constants";
 import BaseCommand, { BaseCommandOptions } from "./base-command";
 import SubCommand from "./sub-command";
 import { SlashCommandSubcommandGroupBuilder } from "discord.js";

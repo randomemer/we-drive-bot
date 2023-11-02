@@ -1,4 +1,4 @@
-import { DataSizes } from "@/types";
+import { DataSizes } from "@/modules/utils/constants";
 import {
   AutocompleteInteraction,
   ChatInputCommandInteraction,

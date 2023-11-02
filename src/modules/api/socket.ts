@@ -1,13 +1,16 @@
 import pterodactyl from "@/modules/api";
 import ServerModel, { ServerObject } from "@/modules/db/models/server";
+import {
+  AsyncStatus,
+  DataSizes,
+  StatusMessage,
+} from "@/modules/utils/constants";
 import { convertBytes, defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
-import { DataSizes } from "@/types";
 import dayjs from "dayjs";
 import { Channel, Client, Message, codeBlock, roleMention } from "discord.js";
 import { ClientRequest, IncomingMessage } from "http";
 import { RawData, WebSocket } from "ws";
-import { AsyncStatus, StatusMessage } from "@/modules/utils/constants";
 
 export default class ServerSocketManager {
   static managers = new Map<string, ServerSocketManager>();
@@ -278,6 +281,7 @@ export default class ServerSocketManager {
   startRealtimeUpdates() {
     if (!this.server.mc_channel) return;
     if (this.socket.readyState !== WebSocket.OPEN) return;
+    if (this.timer) return;
 
     this.sendUpdate();
     if (this.status !== "offline") {

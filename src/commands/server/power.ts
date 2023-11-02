@@ -7,6 +7,7 @@ import { POWER_CMDS } from "@/modules/utils/constants";
 import sendErrorMessage, { AppError } from "@/modules/utils/errors";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
+import { playerMiddleware } from "@/modules/utils/middleware";
 import {
   PermissionFlagsBits,
   SlashCommandSubcommandBuilder,
@@ -29,22 +30,7 @@ export default new SubCommand({
         )
     ),
 
-  middleware: [
-    async function (interaction, ctx, next) {
-      const player = await UserModel.query().findById(interaction.user.id);
-      if (!player)
-        throw new AppError(
-          `Profile Not Found`,
-          `Are you sure you created your profile with ${inlineCode(
-            "/player create"
-          )} command?`
-        );
-
-      ctx.set("player", player);
-
-      next();
-    },
-  ],
+  middleware: [playerMiddleware],
 
   async callback(interaction, ctx) {
     try {

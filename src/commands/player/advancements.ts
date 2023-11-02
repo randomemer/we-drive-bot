@@ -6,13 +6,10 @@ import UserModel from "@/modules/db/models/user";
 import sendErrorMessage, { AppError } from "@/modules/utils/errors";
 import { defaultEmbed, getPageFooter } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
+import { serverMiddleware } from "@/modules/utils/middleware";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
 import dayjs from "dayjs";
-import {
-  SlashCommandSubcommandBuilder,
-  codeBlock,
-  inlineCode,
-} from "discord.js";
+import { SlashCommandSubcommandBuilder, codeBlock } from "discord.js";
 import _ from "lodash";
 import MiniSearch, { SearchResult } from "minisearch";
 import { table } from "table";
@@ -39,37 +36,7 @@ export default new SubCommand({
         .setAutocomplete(true)
     ),
 
-  middleware: [
-    // 1. Check if user has created profile
-    async function (interaction, ctx, next) {
-      const player = await UserModel.query().findById(interaction.user.id);
-      if (!player)
-        throw new AppError(
-          "Profile Not Found",
-          `"Are you sure you created your profile with ${inlineCode(
-            "/player create"
-          )} command?`
-        );
-
-      ctx.set("player", player);
-
-      next();
-    },
-    // 2. Check if guild has required config
-    async function (interaction, ctx, next) {
-      const server = await ServerModel.query().findById(interaction.guildId!);
-
-      if (!server?.mc_server) {
-        throw new AppError(
-          "Missing Configuration",
-          "There is no minecraft server configured in settings"
-        );
-      }
-
-      ctx.set("server", server);
-      next();
-    },
-  ],
+  middleware: [serverMiddleware],
 
   async callback(interaction, ctx) {
     try {

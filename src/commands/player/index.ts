@@ -1,8 +1,8 @@
 import { RootCommandNonExecutable } from "@/modules/commands/root-command";
+import { playerMiddleware } from "@/modules/utils/middleware";
 import { SlashCommandBuilder } from "discord.js";
 import advancementsCommand from "./advancements";
 import createCommand from "./create";
-import UserModel from "@/modules/db/models/user";
 
 export default new RootCommandNonExecutable({
   data: new SlashCommandBuilder()
@@ -11,9 +11,5 @@ export default new RootCommandNonExecutable({
 
   subcommands: [createCommand, advancementsCommand],
 
-  middleware: async function (interaction, ctx, next) {
-    const userModel = await UserModel.query().findById(interaction.user.id);
-    ctx.set("player", userModel);
-    next();
-  },
+  middleware: playerMiddleware,
 });

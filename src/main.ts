@@ -6,18 +6,17 @@ import utc from "dayjs/plugin/utc";
 import dotenv from "dotenv";
 import WeDriveClient from "./bot";
 import ServerSocketManager from "./modules/api/socket";
-import "./modules/db";
 import { knex } from "./modules/db";
 import { PROCESS_STOP_SIGNALS } from "./modules/utils/constants";
 import { getInviteURL } from "./modules/utils/functions";
 import logger from "./modules/utils/logger";
 
+dotenv.config({ path: `env/.env.${process.env.NODE_ENV}` });
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(advancedFormat);
 dayjs.extend(duration);
-
-dotenv.config({ path: `env/.env.${process.env.NODE_ENV}` });
 
 const client = new WeDriveClient({
   intents: ["GuildMessages", "MessageContent", "Guilds"],

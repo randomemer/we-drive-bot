@@ -1,4 +1,4 @@
-import { CommandType } from "@/types";
+import { CommandType } from "@/modules/utils/constants";
 import _ from "lodash";
 
 export interface BaseCommandOptions {
