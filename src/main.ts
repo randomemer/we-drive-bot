@@ -5,12 +5,12 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import dotenv from "dotenv";
 import WeDriveClient from "./bot";
+import BackupManager from "./modules/api/backups";
 import ServerSocketManager from "./modules/api/socket";
 import { knex } from "./modules/db";
 import { PROCESS_STOP_SIGNALS } from "./modules/utils/constants";
 import { getInviteURL } from "./modules/utils/functions";
 import logger from "./modules/utils/logger";
-import BackupManager from "./modules/api/backups";
 
 dotenv.config({ path: `env/.env.${process.env.NODE_ENV}` });
 

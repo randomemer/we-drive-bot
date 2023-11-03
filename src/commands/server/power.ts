@@ -1,7 +1,7 @@
 import pterodactyl from "@/modules/api";
 import ServerSocketManager from "@/modules/api/socket";
 import SubCommand from "@/modules/commands/sub-command";
-import ServerModel from "@/modules/db/models/server";
+import { GuildModelJoined } from "@/modules/db/models/guild";
 import UserModel from "@/modules/db/models/user";
 import { POWER_CMDS } from "@/modules/utils/constants";
 import sendErrorMessage, { AppError } from "@/modules/utils/errors";
@@ -35,8 +35,8 @@ export default new SubCommand({
   async callback(interaction, ctx) {
     try {
       const player = ctx.get("player") as UserModel;
-      const server = ctx.get("server") as ServerModel;
-      const serverId = server.mc_server!;
+      const server = ctx.get("guild") as GuildModelJoined;
+      const serverId = server.minecraft_server!.id;
 
       const option = interaction.options.get("state", true);
       const state = option.value as ServerPowerState;

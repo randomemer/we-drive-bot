@@ -1,4 +1,4 @@
-import {
+import type {
   AutocompleteInteraction,
   Awaitable,
   ChatInputCommandInteraction,
@@ -10,13 +10,13 @@ import {
   SlashCommandSubcommandBuilder,
   SlashCommandSubcommandGroupBuilder,
 } from "discord.js";
-import { CommandType } from ".";
-import {
+import type { CommandType } from ".";
+import type {
   RootCommandExecutable,
   RootCommandNonExecutable,
 } from "@/modules/commands/root-command";
-import SubcommandGroup from "@/modules/commands/sub-command-group";
-import SubCommand from "@/modules/commands/sub-command";
+import type SubcommandGroup from "@/modules/commands/sub-command-group";
+import type SubCommand from "@/modules/commands/sub-command";
 
 declare module "discord.js" {
   interface Client {

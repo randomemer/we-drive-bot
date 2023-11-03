@@ -1,6 +1,6 @@
 import pterodactyl from "@/modules/api";
 import SubCommand from "@/modules/commands/sub-command";
-import ServerModel from "@/modules/db/models/server";
+import { GuildModelJoined } from "@/modules/db/models/guild";
 import { defaultEmbed, getPageFooter } from "@/modules/utils/functions";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
 import dayjs from "dayjs";
@@ -11,10 +11,11 @@ export default new SubCommand({
   data: new SlashCommandSubcommandBuilder()
     .setName("list")
     .setDescription("List all the existing backups of the server"),
+
   async callback(interaction, context) {
-    const server = context.get("server") as ServerModel;
+    const guildModel = context.get("guild") as GuildModelJoined;
     const resp = await pterodactyl.get<PanelAPIResp<Backup[]>>(
-      `/servers/${server.mc_server}/backups`
+      `/servers/${guildModel.mc_server}/backups`
     );
 
     const headers = ["#", "Name", "Created At"];
@@ -24,6 +25,7 @@ export default new SubCommand({
       item.attributes.name,
       dayjs(item.attributes.created_at).format("DD/MM/YYYY h:mm A z"),
     ]);
+
     const paginator = new PaginatedEmbedMessage({
       content: backups,
       builder(items, meta) {

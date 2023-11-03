@@ -1,5 +1,5 @@
 import { RootCommandNonExecutable } from "@/modules/commands/root-command";
-import ServerModel from "@/modules/db/models/server";
+import { GuildModel } from "@/modules/db";
 import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import backupCron from "./backup-cron";
 import mcChannel from "./mc-channel";
@@ -16,8 +16,10 @@ export default new RootCommandNonExecutable({
   subcommands: [mcRole, mcChannel, mcServer, backupCron, view],
 
   middleware: async function (interaction, ctx, next) {
-    const server = await ServerModel.query().findById(interaction.guildId!);
-    ctx.set("server", server);
+    const guild = await GuildModel.query()
+      .findById(interaction.guildId!)
+      .withGraphJoined("minecraft_server");
+    ctx.set("guild", guild);
     next();
   },
 });

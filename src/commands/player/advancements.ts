@@ -1,12 +1,12 @@
 import advancements from "@/assets/advancements.json";
 import pterodactyl from "@/modules/api";
 import SubCommand from "@/modules/commands/sub-command";
-import ServerModel from "@/modules/db/models/server";
+import { GuildModelJoined } from "@/modules/db/models/guild";
 import UserModel from "@/modules/db/models/user";
-import sendErrorMessage, { AppError } from "@/modules/utils/errors";
+import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed, getPageFooter } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
-import { serverMiddleware } from "@/modules/utils/middleware";
+import { guildMiddleware, playerMiddleware } from "@/modules/utils/middleware";
 import PaginatedEmbedMessage from "@/modules/utils/paginated-embed";
 import dayjs from "dayjs";
 import { SlashCommandSubcommandBuilder, codeBlock } from "discord.js";
@@ -36,32 +36,21 @@ export default new SubCommand({
         .setAutocomplete(true)
     ),
 
-  middleware: [serverMiddleware],
+  middleware: [playerMiddleware, guildMiddleware],
 
   async callback(interaction, ctx) {
     try {
+      const player = ctx.get("player") as UserModel | undefined;
+      const guildModel = ctx.get("guild") as GuildModelJoined;
+
       const option = interaction.options.get("title", true);
       const tag = `minecraft:${option.value}`;
 
-      const server = await ServerModel.query().findById(interaction.guildId!);
-      const serverId = server?.mc_server;
-      if (!serverId)
-        throw new AppError(
-          "Missing Configuration",
-          "Minecraft server has not configured"
-        );
-
-      const player = ctx.get("player") as UserModel | undefined;
-      const uuid = player?.mc_uuid;
-      if (!uuid)
-        throw new AppError(
-          "Missing Profile",
-          "You have not created your profile"
-        );
-
-      const filePath = `/world/advancements/${uuid}.json`;
+      const filePath = `/world/advancements/${player!.mc_uuid}.json`;
       const resp = await pterodactyl.get<PlayerAdvancements>(
-        `/servers/${serverId}/files/contents?file=${filePath}`
+        `/servers/${
+          guildModel.minecraft_server!.id
+        }/files/contents?file=${filePath}`
       );
 
       const advancement = advancements.find((adv) => adv.id === option.value)!;

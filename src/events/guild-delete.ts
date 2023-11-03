@@ -1,5 +1,5 @@
 import ServerSocketManager from "@/modules/api/socket";
-import ServerModel from "@/modules/db/models/server";
+import { GuildModel } from "@/modules/db";
 import logger from "@/modules/utils/logger";
 
 const config: ListenerConfig<"guildDelete"> = {
@@ -7,7 +7,7 @@ const config: ListenerConfig<"guildDelete"> = {
   async listener(guild) {
     try {
       // Delete the record in db
-      await ServerModel.query().deleteById(guild.id);
+      await GuildModel.query().deleteById(guild.id);
 
       // Close the server's socket
       const manager = ServerSocketManager.managers.get(guild.id);

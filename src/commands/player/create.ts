@@ -8,7 +8,6 @@ import axios from "axios";
 import {
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
-  inlineCode,
 } from "discord.js";
 
 export default new SubCommand({

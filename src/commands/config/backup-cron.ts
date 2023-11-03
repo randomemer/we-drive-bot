@@ -1,7 +1,8 @@
 import SubCommand from "@/modules/commands/sub-command";
-import ServerModel from "@/modules/db/models/server";
+import { GuildModelJoined } from "@/modules/db/models/guild";
 import { AppError } from "@/modules/utils/errors";
 import { defaultEmbed } from "@/modules/utils/functions";
+import { guildMiddleware } from "@/modules/utils/middleware";
 import { SlashCommandSubcommandBuilder, inlineCode } from "discord.js";
 import cron from "node-cron";
 
@@ -17,8 +18,11 @@ export default new SubCommand({
         .setDescription("Cron expression for your schedule")
         .setRequired(true)
     ),
+
+  middleware: guildMiddleware,
+
   async callback(interaction, ctx) {
-    const server = ctx.get("server") as ServerModel;
+    const guildModel = ctx.get("guild") as GuildModelJoined;
     const schedule = interaction.options.getString("cron", true);
 
     const isValid = cron.validate(schedule);
@@ -29,7 +33,9 @@ export default new SubCommand({
       );
     }
 
-    await server.$query().patch({ backup_cron: schedule });
+    await guildModel
+      .minecraft_server!.$query()
+      .patch({ backup_cron: schedule });
 
     const embed = defaultEmbed()
       .setTitle("✅ Backup Schedule Updated")

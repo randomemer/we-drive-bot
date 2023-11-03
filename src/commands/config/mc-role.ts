@@ -1,5 +1,5 @@
 import SubCommand from "@/modules/commands/sub-command";
-import ServerModel from "@/modules/db/models/server";
+import { GuildModelJoined } from "@/modules/db/models/guild";
 import sendErrorMessage from "@/modules/utils/errors";
 import { defaultEmbed } from "@/modules/utils/functions";
 import logger from "@/modules/utils/logger";
@@ -21,7 +21,7 @@ export default new SubCommand({
     ),
   async callback(interaction, ctx) {
     try {
-      const server = ctx.get("server") as ServerModel;
+      const guildModel = ctx.get("guild") as GuildModelJoined;
       const role = interaction.options.getRole("role", true);
 
       const embed = defaultEmbed();
@@ -39,7 +39,7 @@ export default new SubCommand({
       }
 
       // Change the server's config
-      await server.$query().patch({ mc_role: role.id });
+      await guildModel.$query().patch({ mc_role: role.id });
 
       embed
         .setTitle("✅ Minecraft role configured")

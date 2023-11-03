@@ -1,4 +1,4 @@
-import { Model, ModelObject } from "objection";
+import { Model, ModelObject, ModelOptions, QueryContext } from "objection";
 
 class UserModel extends Model {
   id: string;
@@ -9,6 +9,13 @@ class UserModel extends Model {
 
   static idColumn: string | string[] = "id";
   static tableName: string = "users";
+
+  $afterUpdate(
+    opt: ModelOptions,
+    queryContext: QueryContext
+  ): void | Promise<any> {
+    this.updated_at = new Date();
+  }
 }
 
 export type UserObject = ModelObject<UserModel>;

@@ -1,5 +1,5 @@
 import { RootCommandNonExecutable } from "@/modules/commands/root-command";
-import { serverMiddleware } from "@/modules/utils/middleware";
+import { guildMiddleware } from "@/modules/utils/middleware";
 import { SlashCommandBuilder } from "discord.js";
 import powerCommand from "./power";
 
@@ -10,5 +10,5 @@ export default new RootCommandNonExecutable({
 
   subcommands: [powerCommand],
 
-  middleware: serverMiddleware,
+  middleware: guildMiddleware,
 });

@@ -1,5 +1,6 @@
 import pterodactyl from "@/modules/api";
-import ServerModel, { ServerObject } from "@/modules/db/models/server";
+import { GuildObject } from "@/modules/db/models/guild";
+import { GuildModel } from "@/modules/db";
 import {
   AsyncStatus,
   DataSizes,
@@ -16,7 +17,7 @@ export default class ServerSocketManager {
   static managers = new Map<string, ServerSocketManager>();
 
   static async initWebsockets(client: Client) {
-    const servers = await ServerModel.query().whereNotNull("mc_server");
+    const servers = await GuildModel.query().whereNotNull("mc_server");
 
     for (const server of servers) {
       new ServerSocketManager(client, server);
@@ -25,7 +26,7 @@ export default class ServerSocketManager {
     logger.info(`Created ${servers.length} pterodactyl sockets`);
   }
 
-  static updateWebsocket(serverId: string, updated: Partial<ServerObject>) {
+  static updateWebsocket(serverId: string, updated: Partial<GuildObject>) {
     const manager = this.managers.get(serverId);
     if (!manager) return;
 
@@ -61,7 +62,7 @@ export default class ServerSocketManager {
   }
 
   client: Client;
-  server: ServerModel;
+  server: GuildModel;
 
   token: string;
   socket: WebSocket;
@@ -75,7 +76,7 @@ export default class ServerSocketManager {
   message?: Message | undefined;
   realtimeUpdateStatus: AsyncStatus = AsyncStatus.Idle;
 
-  constructor(client: Client, server: ServerModel) {
+  constructor(client: Client, server: GuildModel) {
     this.client = client;
     this.server = server;
 

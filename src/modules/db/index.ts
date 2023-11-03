@@ -1,7 +1,5 @@
 import createKnex from "knex";
 import { Model } from "objection";
-import ServerModel from "./models/server";
-import UserModel from "./models/user";
 
 export const knex = createKnex({
   client: "mysql2",
@@ -19,7 +17,6 @@ export const knex = createKnex({
 
 Model.knex(knex);
 
-export default {
-  ServerModel,
-  UserModel,
-};
+export { default as GuildModel } from "./models/guild";
+export { default as ServerModel } from "./models/server";
+export { default as UserModel } from "./models/user";

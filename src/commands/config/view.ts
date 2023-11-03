@@ -1,5 +1,5 @@
 import SubCommand from "@/modules/commands/sub-command";
-import ServerModel from "@/modules/db/models/server";
+import { GuildModelJoined } from "@/modules/db/models/guild";
 import { defaultEmbed } from "@/modules/utils/functions";
 import {
   SlashCommandSubcommandBuilder,
@@ -14,25 +14,25 @@ export default new SubCommand({
     .setName("view")
     .setDescription("View your current configuration"),
   async callback(interaction, context) {
-    const server = context.get("server") as ServerModel;
+    const guildModel = context.get("guild") as GuildModelJoined;
     const embed = defaultEmbed()
       .setTitle("⚙ Server Config")
       .setTimestamp(new Date());
 
     const desc = [
       `- ${bold("Minecraft Server Id")} : ${inlineCode(
-        server.mc_server ?? "nil"
+        guildModel.mc_server ?? "nil"
       )}`,
       `- ${bold("Minecraft Updates Channel")} : ${
-        server.mc_channel
-          ? channelMention(server.mc_channel)
+        guildModel.mc_channel
+          ? channelMention(guildModel.mc_channel)
           : inlineCode("nil")
       }`,
       `- ${bold("Minecraft Role")} : ${
-        server.mc_role ? roleMention(server.mc_role) : inlineCode("nil")
+        guildModel.mc_role ? roleMention(guildModel.mc_role) : inlineCode("nil")
       }`,
       `- ${bold("Backup Schedule")} : ${inlineCode(
-        server.backup_cron ?? "nil"
+        guildModel.minecraft_server?.backup_cron ?? "nil"
       )}`,
     ];
 

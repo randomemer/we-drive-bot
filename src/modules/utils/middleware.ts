@@ -1,23 +1,25 @@
-import ServerModel from "@/modules/db/models/server";
-import UserModel from "@/modules/db/models/user";
+import { GuildModel, UserModel } from "@/modules/db";
 import { inlineCode } from "discord.js";
 import { AppError } from "./errors";
+import { GuildModelJoined } from "../db/models/guild";
 
-export const serverMiddleware: MiddlewareFunc = async function (
+export const guildMiddleware: MiddlewareFunc = async function (
   interaction,
   ctx,
   next
 ) {
-  const server = await ServerModel.query().findById(interaction.guildId!);
+  const guildModel = (await GuildModel.query()
+    .findById(interaction.guildId!)
+    .withGraphJoined("minecraft_server")) as GuildModelJoined;
 
-  if (!server?.mc_server) {
+  if (!guildModel?.minecraft_server) {
     throw new AppError(
       "Missing Configuration",
       "There is no minecraft server configured in settings"
     );
   }
 
-  ctx.set("server", server);
+  ctx.set("guild", guildModel);
   next();
 };
 

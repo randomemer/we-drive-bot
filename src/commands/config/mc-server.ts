@@ -1,5 +1,6 @@
 import pterodactyl from "@/modules/api";
 import SubCommand from "@/modules/commands/sub-command";
+import { GuildModelJoined } from "@/modules/db/models/guild";
 import ServerModel from "@/modules/db/models/server";
 import sendErrorMessage from "@/modules/utils/errors";
 import logger from "@/modules/utils/logger";
@@ -20,7 +21,7 @@ export default new SubCommand({
 
   async callback(interaction, ctx) {
     try {
-      const server = ctx.get("server") as ServerModel;
+      const guildModel = ctx.get("guild") as GuildModelJoined;
       const resp = await pterodactyl.get<PanelAPIResp<PterodactylServer[]>>(
         "/"
       );
@@ -33,10 +34,10 @@ export default new SubCommand({
             (item) =>
               new StringSelectMenuOptionBuilder({
                 label: item.attributes.name,
-                value: item.attributes.identifier,
+                value: item.attributes.uuid,
                 description: item.attributes.description,
                 emoji: { name: "🗄" },
-                default: server.mc_server === item.attributes.identifier,
+                default: guildModel.mc_server === item.attributes.uuid,
               })
           )
         );
@@ -62,10 +63,15 @@ export default new SubCommand({
       collector.on("collect", async (int) => {
         const id = int.values[0];
 
-        await server.$query().patch({ mc_server: id });
+        const serverModel = await ServerModel.query()
+          .insert({ id })
+          .onConflict("id")
+          .ignore();
+
+        await guildModel.$query().patch({ mc_server: serverModel.id });
 
         const editedEmbed = produce(reply.embeds[0].toJSON(), (embed) => {
-          embed.description = "✅ Sucessfully changed default server";
+          embed.description = "✅ Sucessfully Updated Default Server";
         });
 
         await int.update({ embeds: [editedEmbed], components: [] });
