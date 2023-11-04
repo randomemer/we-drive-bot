@@ -2,7 +2,11 @@ import { OAuth2Scopes, PermissionFlagsBits } from "discord.js";
 
 export const UUID_TOOL_API = `http://tools.glowingmines.eu`;
 
-export const BOT_PERMS = [PermissionFlagsBits.SendMessages];
+export const BOT_PERMS = [
+  PermissionFlagsBits.SendMessages,
+  PermissionFlagsBits.Connect,
+  PermissionFlagsBits.Speak,
+];
 
 export const BOT_SCOPES = [OAuth2Scopes.Bot, OAuth2Scopes.ApplicationsCommands];
 

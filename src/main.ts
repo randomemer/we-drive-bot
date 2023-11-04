@@ -3,6 +3,7 @@ import advancedFormat from "dayjs/plugin/advancedFormat";
 import duration from "dayjs/plugin/duration";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { GatewayIntentBits } from "discord.js";
 import dotenv from "dotenv";
 import WeDriveClient from "./bot";
 import BackupManager from "./modules/api/backups";
@@ -20,7 +21,11 @@ dayjs.extend(advancedFormat);
 dayjs.extend(duration);
 
 const client = new WeDriveClient({
-  intents: ["GuildMessages", "MessageContent", "Guilds"],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildVoiceStates,
+  ],
 });
 
 async function main() {
@@ -69,3 +74,5 @@ process.on("unhandledRejection", (error) => {
 });
 
 export default client;
+
+export const ROOT_DIR = __dirname;
