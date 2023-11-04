@@ -12,6 +12,7 @@ import { knex } from "./modules/db";
 import { PROCESS_STOP_SIGNALS } from "./modules/utils/constants";
 import { getInviteURL } from "./modules/utils/functions";
 import logger from "./modules/utils/logger";
+import { generateDependencyReport } from "@discordjs/voice";
 
 dotenv.config({ path: `env/.env.${process.env.NODE_ENV}` });
 
@@ -39,6 +40,7 @@ async function main() {
 
     // Get Invite URL
     logger.info(getInviteURL());
+    logger.info(generateDependencyReport());
   } catch (error) {
     logger.error(error, "Failed to initialize client");
     throw error;

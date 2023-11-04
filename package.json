@@ -22,7 +22,6 @@
     "knex": "^3.0.1",
     "koa": "^2.14.2",
     "koa-router": "^12.0.1",
-    "libsodium-wrappers": "^0.7.13",
     "lodash": "^4.17.21",
     "minisearch": "^6.2.0",
     "mysql2": "^3.6.2",
@@ -51,5 +50,12 @@
     "tslib": "^2.6.2",
     "tsx": "^3.14.0",
     "typescript": "^5.2.2"
+  },
+  "optionalDependencies": {
+    "@discordjs/opus": "^0.9.0",
+    "libsodium-wrappers": "^0.7.13",
+    "opusscript": "^0.1.1",
+    "sodium-native": "^4.0.4",
+    "tweetnacl": "^1.0.3"
   }
 }
